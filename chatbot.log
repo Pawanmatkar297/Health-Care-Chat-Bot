@@ -1,0 +1,19 @@
+2024-12-10 13:42:01,600 - INFO: Imported existing <module 'comtypes.gen' from 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2024-12-10 13:42:01,601 - INFO: Using writeable comtypes cache directory: 'C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\comtypes\gen'
+2024-12-10 13:42:01,991 - INFO: Loaded dataset with 246 records
+2024-12-10 13:42:01,992 - CRITICAL: Unhandled error in main execution: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-12-10 13:42:15,241 - INFO: Imported existing <module 'comtypes.gen' from 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2024-12-10 13:42:15,241 - INFO: Using writeable comtypes cache directory: 'C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\comtypes\gen'
+2024-12-10 13:42:15,632 - INFO: Loaded dataset with 246 records
+2024-12-10 13:42:15,633 - CRITICAL: Unhandled error in main execution: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-12-10 13:45:03,231 - INFO: Imported existing <module 'comtypes.gen' from 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2024-12-10 13:45:03,232 - INFO: Using writeable comtypes cache directory: 'C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\comtypes\gen'
+2024-12-10 13:45:03,640 - INFO: Loaded dataset with 246 records
+2024-12-10 13:45:03,641 - CRITICAL: Unhandled error in main execution: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-12-10 14:02:01,672 - INFO: Imported existing <module 'comtypes.gen' from 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2024-12-10 14:02:01,672 - INFO: Using writeable comtypes cache directory: 'C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\comtypes\gen'
+2024-12-10 14:02:02,155 - INFO: Loaded dataset with 246 records
+2024-12-10 14:03:52,341 - INFO: Imported existing <module 'comtypes.gen' from 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2024-12-10 14:03:52,341 - INFO: Using writeable comtypes cache directory: 'C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\comtypes\gen'
+2024-12-10 14:03:52,734 - INFO: Loaded dataset with 246 records
+2024-12-10 14:04:04,177 - CRITICAL: Unhandled error in main execution: 'MultilingualHealthcareChatbot' object has no attribute 'text_to_speech'
