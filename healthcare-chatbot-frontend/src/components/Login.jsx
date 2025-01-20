@@ -37,66 +37,91 @@ const Login = () => {
     };
 
     const handleGuestAccess = () => {
-        navigate('/chat'); // Navigate directly to chat without authentication
+        localStorage.setItem('token', 'guest-token');
+        localStorage.setItem('username', 'Guest');
+        navigate('/chat');
     };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <div className="logo-container">
-                        <FaRobot className="logo" />
-                        <h1>Healthcare Assistant</h1>
-                    </div>
-                    <p>Sign in to access your healthcare chatbot</p>
-                </div>
-
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="username">
-                            <FaUser /> Username
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter your username"
-                            required
-                        />
+        <div className="login-page">
+            <div className="login-container">
+                <div className="login-card">
+                    <div className="login-header">
+                        <div className="logo-container">
+                            <FaRobot className="logo" />
+                            <h1>Healthcare Assistant</h1>
+                        </div>
+                        <p>Sign in to access your healthcare chatbot</p>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">
-                            <FaLock /> Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            required
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label htmlFor="username">
+                                <FaUser /> Username
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Enter your username"
+                                required
+                            />
+                        </div>
 
-                    {error && <div className="error-message">{error}</div>}
+                        <div className="form-group">
+                            <label htmlFor="password">
+                                <FaLock /> Password
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
+
+                        {error && <div className="error-message">{error}</div>}
+
+                        <button 
+                            type="submit" 
+                            className="login-button" 
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <span className="loading-spinner"></span>
+                            ) : (
+                                'Sign In'
+                            )}
+                        </button>
+                    </form>
 
                     <button 
-                        type="submit" 
-                        className="login-button" 
-                        disabled={isLoading}
+                        onClick={handleGuestAccess}
+                        className="guest-button"
+                        type="button"
                     >
-                        {isLoading ? (
-                            <span className="loading-spinner"></span>
-                        ) : (
-                            'Sign In'
-                        )}
+                        Continue as Guest <FaArrowRight />
                     </button>
-                </form>
 
-                <div className="register-link">
-                    Don't have an account? <Link to="/register">Register here</Link>
+                    <div className="register-link">
+                        Don't have an account? <Link to="/register">Register here</Link>
+                    </div>
+                </div>
+            </div>
+
+            <div className="features-grid">
+                <div className="feature">
+                    <FaUserMd className="feature-icon" />
+                    <h3>24/7 Healthcare Support</h3>
+                    <p>Access medical assistance anytime, anywhere</p>
+                </div>
+                <div className="feature">
+                    <FaRobot className="feature-icon" />
+                    <h3>AI-Powered Assistant</h3>
+                    <p>Get instant responses to your health queries</p>
                 </div>
             </div>
         </div>

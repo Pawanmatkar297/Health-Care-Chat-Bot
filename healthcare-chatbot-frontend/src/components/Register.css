@@ -1,10 +1,15 @@
 /* Inherit the root variables from Login.css */
-.register-container {
+.register-page {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+}
+
+.register-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
     padding: 20px;
 }
 

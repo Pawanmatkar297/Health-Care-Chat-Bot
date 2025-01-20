@@ -221,4 +221,58 @@
   .login-header .logo {
     font-size: 32px;
   }
+}
+
+.guest-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.guest-button:hover {
+    background-color: #e0e0e0;
+}
+
+.guest-button svg {
+    font-size: 14px;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    margin-top: auto;
+}
+
+.feature {
+    background: var(--background-light);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.feature-icon {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 12px;
 } 

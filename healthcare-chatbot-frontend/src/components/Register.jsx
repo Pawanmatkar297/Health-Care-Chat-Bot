@@ -63,107 +63,109 @@ const Register = () => {
     };
 
     return (
-        <div className="register-container">
-            <div className="register-card">
-                <div className="register-header">
-                    <div className="logo-container">
-                        <FaRobot className="logo" />
-                        <h1>Healthcare Assistant</h1>
+        <div className="register-page">
+            <div className="register-container">
+                <div className="register-card">
+                    <div className="register-header">
+                        <div className="logo-container">
+                            <FaRobot className="logo" />
+                            <h1>Healthcare Assistant</h1>
+                        </div>
+                        <p>Create your account to get started</p>
                     </div>
-                    <p>Create your account to get started</p>
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label htmlFor="username">
+                                <FaUser /> Username
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                placeholder="Choose a username"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="email">
+                                <FaEnvelope /> Email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="Enter your email"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="password">
+                                <FaLock /> Password
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Create a password"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="confirmPassword">
+                                <FaLock /> Confirm Password
+                            </label>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                placeholder="Confirm your password"
+                                required
+                            />
+                        </div>
+
+                        {error && <div className="error-message">{error}</div>}
+
+                        <button 
+                            type="submit" 
+                            className="register-button"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <span className="loading-spinner"></span>
+                            ) : (
+                                'Create Account'
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="login-link">
+                        Already have an account? <Link to="/login">Sign in here</Link>
+                    </div>
                 </div>
+            </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="username">
-                            <FaUser /> Username
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            placeholder="Choose a username"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">
-                            <FaEnvelope /> Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Enter your email"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">
-                            <FaLock /> Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Create a password"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">
-                            <FaLock /> Confirm Password
-                        </label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            placeholder="Confirm your password"
-                            required
-                        />
-                    </div>
-
-                    {error && <div className="error-message">{error}</div>}
-
-                    <button 
-                        type="submit" 
-                        className="register-button"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <span className="loading-spinner"></span>
-                        ) : (
-                            'Create Account'
-                        )}
-                    </button>
-                </form>
-
-                <div className="login-link">
-                    Already have an account? <Link to="/login">Sign in here</Link>
+            <div className="features-grid">
+                <div className="feature">
+                    <FaUserMd className="feature-icon" />
+                    <h3>24/7 Healthcare Support</h3>
+                    <p>Access medical assistance anytime, anywhere</p>
                 </div>
-
-                <div className="features-grid">
-                    <div className="feature">
-                        <FaUserMd className="feature-icon" />
-                        <h3>24/7 Healthcare Support</h3>
-                        <p>Access medical assistance anytime, anywhere</p>
-                    </div>
-                    <div className="feature">
-                        <FaRobot className="feature-icon" />
-                        <h3>AI-Powered Assistant</h3>
-                        <p>Get instant responses to your health queries</p>
-                    </div>
+                <div className="feature">
+                    <FaRobot className="feature-icon" />
+                    <h3>AI-Powered Assistant</h3>
+                    <p>Get instant responses to your health queries</p>
                 </div>
             </div>
         </div>
