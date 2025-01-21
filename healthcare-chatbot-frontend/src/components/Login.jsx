@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
-import { FaUser, FaLock, FaHeartbeat, FaUserMd, FaHospital, FaArrowRight, FaRobot } from 'react-icons/fa';
+import { FaUser, FaLock, FaUserMd, FaArrowRight, FaRobot } from 'react-icons/fa';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -48,8 +48,8 @@ const Login = () => {
                 <div className="login-card">
                     <div className="login-header">
                         <div className="logo-container">
-                            <FaRobot className="logo" />
-                            <h1>Healthcare Assistant</h1>
+                        <img src="/bot_assistant_QWK_icon.ico" alt="MedAssist Logo" className="logo" />
+                            <h1>MedAssist</h1>
                         </div>
                         <p>Sign in to access your healthcare chatbot</p>
                     </div>

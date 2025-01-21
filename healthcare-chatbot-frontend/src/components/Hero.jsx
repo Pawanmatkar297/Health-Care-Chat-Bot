@@ -36,10 +36,10 @@ const Hero = () => {
                 <div className="hero-content animate-on-scroll">
                     <div className="hero-logo">
                         <div className="logo-wrapper">
-                            <FaRobot className="logo" />
+                            <img src="/bot_assistant_QWK_icon.ico" alt="MedAssist Logo" className="logo" />
                             <div className="logo-glow"></div>
                         </div>
-                        <h1>Healthcare <span className="gradient-text">Assistant</span></h1>
+                        <h1><span className="gradient-text">MedAssist</span></h1>
                     </div>
                     <p className="hero-tagline">Your AI-Powered Healthcare Companion</p>
                     <p className="hero-description">

@@ -39,6 +39,17 @@
     margin-bottom: 40px;
 }
 
+.rlogo {
+    width: 40px;
+    height: 40px;
+    font-size: 56px;
+    color: var(--primary-color);
+    position: relative;
+    padding-top: 7px;
+    padding-left: 10px;
+    z-index: 1;
+}
+
 .register-header .logo-container {
     display: flex;
     align-items: center;
@@ -238,3 +249,13 @@
         padding: 20px;
     }
 } 
+
+.logo-container h1 {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 0;  
+    color: var(--primary-color);
+    display: flex;
+    align-items: centre; 
+    padding-left: 15px;
+}

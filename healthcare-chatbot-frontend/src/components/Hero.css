@@ -91,13 +91,16 @@
 .logo-wrapper {
     position: relative;
     padding: 16px;
+    display: flex;
+    align-items: center;
 }
 
 .logo {
-    font-size: 56px;
-    color: var(--primary-color);
+    width: 70px;
+    height: 65px;
     position: relative;
     z-index: 1;
+    padding-top: 5px;
 }
 
 .logo-glow {
@@ -114,10 +117,12 @@
 
 .hero-logo h1 {
     font-size: 56px;
-    font-weight: 800;
+    font-weight: 900;
     margin: 0;
     background-clip: text;
     -webkit-background-clip: text;
+    display: flex;
+    align-items: center;
 }
 
 .gradient-text {

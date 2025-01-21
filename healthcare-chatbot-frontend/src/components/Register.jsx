@@ -68,8 +68,8 @@ const Register = () => {
                 <div className="register-card">
                     <div className="register-header">
                         <div className="logo-container">
-                            <FaRobot className="logo" />
-                            <h1>Healthcare Assistant</h1>
+                        <img src="/bot_assistant_QWK_icon.ico" alt="MedAssist Logo" className="rlogo" />
+                            <h1>MedAssist</h1>
                         </div>
                         <p>Create your account to get started</p>
                     </div>

@@ -260,8 +260,8 @@ const Chat = () => {
             {/* Sidebar */}
             <div className="sidebar">
                 <div className="sidebar-header">
-                    <FaRobot className="logo" />
-                    <h2>Health Bot</h2>
+                <img src="/bot_assistant_QWK_icon.ico" alt="MedAssist Logo" className="clogo" />
+                    <h2>MedAssist</h2>
                 </div>
                 
                 <div className="sidebar-menu">

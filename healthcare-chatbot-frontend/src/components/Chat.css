@@ -18,7 +18,7 @@
 
 /* Sidebar Styling */
 .sidebar {
-  width: 280px;
+  width: 220px;
   background: var(--background-grey);
   border-right: 1px solid #e0e0e0;
   padding: 20px;
@@ -32,6 +32,7 @@
   gap: 12px;
   padding: 16px;
   border-bottom: 1px solid #e0e0e0;
+  padding-left: 5px;
 }
 
 .sidebar-header .logo {
@@ -40,9 +41,10 @@
 }
 
 .sidebar-header h2 {
-  color: var(--text-primary);
-  font-size: 20px;
+  color: var(--primary-color);
+  font-size: 30px;
   margin: 0;
+  padding-bottom: 5px;
 }
 
 .sidebar-menu {
@@ -300,4 +302,23 @@
 .get-started-button:active {
     transform: translateY(0);
     box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
-} 
+}
+
+.clogo {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 1;
+  padding-left: 5px;
+
+}
+
+.logo-container h1 {
+  font-size: 64px;
+  font-weight: 900;
+  margin: 0;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  padding-right: 5px;
+}
