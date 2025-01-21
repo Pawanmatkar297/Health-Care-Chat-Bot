@@ -5,14 +5,35 @@ dotenv.config();
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/healthcare_chatbot', {
+        // Clear any existing connections
+        await mongoose.disconnect();
+
+        const mongoURI = 'mongodb://127.0.0.1:27017/healthcare_chatbot';
+        console.log('Attempting to connect to MongoDB at:', mongoURI);
+
+        const conn = await mongoose.connect(mongoURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
         });
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+
+        mongoose.connection.on('error', err => {
+            console.error('MongoDB connection error:', err);
+        });
+
+        mongoose.connection.on('disconnected', () => {
+            console.log('MongoDB disconnected');
+        });
+
+        mongoose.connection.on('connected', () => {
+            console.log('MongoDB Connected successfully');
+        });
+
+        return conn;
     } catch (error) {
-        console.error(`MongoDB connection error: ${error.message}`);
-        process.exit(1);
+        console.error('Failed to connect to MongoDB:', error.message);
+        throw error; // Let the server handle the error
     }
 };
 

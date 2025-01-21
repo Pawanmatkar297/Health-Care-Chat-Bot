@@ -41,11 +41,19 @@ const Register = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5002/api/register', {
-                username: formData.username,
-                email: formData.email,
-                password: formData.password
-            });
+            const response = await axios.post('http://localhost:5001/api/auth/signup', 
+                {
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }
+            );
 
             if (response.data.success) {
                 // Automatically log in the user

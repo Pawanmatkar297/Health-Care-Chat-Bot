@@ -17,10 +17,18 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5002/api/login', {
-                username,
-                password
-            });
+            const response = await axios.post('http://localhost:5001/api/auth/login',
+                {
+                    username,
+                    password
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }
+            );
 
             if (response.data.success) {
                 localStorage.setItem('token', response.data.token);
