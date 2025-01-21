@@ -4,7 +4,7 @@ from chatbot import HealthcareChatbot
 import traceback
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:5000"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 
 # Initialize chatbot
 chatbot = HealthcareChatbot()

@@ -290,7 +290,7 @@ const Chat = () => {
             {/* Main Chat Area */}
             <div className="main-chat">
                 <div className="chat-header">
-                    <h2>Healthcare Chatbot</h2>
+                    <h2>Hello {localStorage.getItem('username')},</h2>
                     <div className="header-actions">
                         <button className="new-chat" onClick={() => {
                             sessionId.current = Math.random().toString(36).substring(7);

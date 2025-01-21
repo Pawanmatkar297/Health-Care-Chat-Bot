@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/hero" />} />
           <Route path="/hero" element={<Hero />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />cd
           <Route path="/register" element={<Register />} />
           <Route path="/chat" element={<Chat />} />
         </Routes>
