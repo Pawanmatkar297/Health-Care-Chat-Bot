@@ -16,21 +16,24 @@ const Chat = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [audioChunks, setAudioChunks] = useState([]);
+    const [isStarted, setIsStarted] = useState(false);
     const navigate = useNavigate();
     const messagesEndRef = useRef(null);
     const sessionId = useRef(Math.random().toString(36).substring(7));
 
     useEffect(() => {
-        // Add initial bot message when component mounts
-        setMessages([{
-            type: 'bot',
-            content: 'Hello! How can I assist you today? Please describe your symptoms.',
-            timestamp: new Date().toISOString()
-        }]);
+        // Only add initial bot message when component mounts if not using get started button
+        if (isStarted) {
+            setMessages([{
+                type: 'bot',
+                content: 'Hello! How can I assist you today? Please describe your symptoms.',
+                timestamp: new Date().toISOString()
+            }]);
+        }
 
         // Check microphone permission
         checkMicrophonePermission();
-    }, []);
+    }, [isStarted]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -237,6 +240,10 @@ const Chat = () => {
         navigate('/login');
     };
 
+    const handleGetStarted = () => {
+        setIsStarted(true);
+    };
+
     const renderMicButton = () => (
         <button 
             type="button" 
@@ -297,29 +304,41 @@ const Chat = () => {
                 </div>
 
                 <div className="messages-container">
-                    {messages.map((message, index) => (
-                        <div key={index} className={`message ${message.type}`}>
-                            <div className="message-icon">
-                                {message.type === 'user' ? <FaUser /> : <FaRobot />}
-                            </div>
-                            <div className="message-content">
-                                {message.content}
-                            </div>
+                    {!isStarted ? (
+                        <div className="get-started-container">
+                            <h2>Welcome to Healthcare Assistant</h2>
+                            <p>Your AI-powered healthcare companion</p>
+                            <button className="get-started-button" onClick={handleGetStarted}>
+                                Get Started
+                            </button>
                         </div>
-                    ))}
+                    ) : (
+                        <>
+                            {messages.map((message, index) => (
+                                <div key={index} className={`message ${message.type}`}>
+                                    <div className="message-icon">
+                                        {message.type === 'user' ? <FaUser /> : <FaRobot />}
+                                    </div>
+                                    <div className="message-content">
+                                        {message.content}
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    )}
                     <div ref={messagesEndRef} />
                 </div>
 
-                <form className={`input-area ${isWaitingForResponse ? 'disabled' : ''}`} onSubmit={handleSendMessage}>
+                <form className={`input-area ${isWaitingForResponse || !isStarted ? 'disabled' : ''}`} onSubmit={handleSendMessage}>
                     <input
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         placeholder="Type your symptoms here..."
-                        disabled={isWaitingForResponse}
+                        disabled={isWaitingForResponse || !isStarted}
                     />
                     {renderMicButton()}
-                    <button type="submit" disabled={isWaitingForResponse}>
+                    <button type="submit" disabled={isWaitingForResponse || !isStarted}>
                         <FaPaperPlane />
                     </button>
                 </form>
