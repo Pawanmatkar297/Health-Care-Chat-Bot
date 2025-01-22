@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import chatHistoryRoutes from './routes/chatHistoryRoutes.js';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/chat-history', chatHistoryRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {

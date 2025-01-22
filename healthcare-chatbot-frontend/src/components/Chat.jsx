@@ -113,12 +113,35 @@ const Chat = () => {
         }
     };
 
+    const saveChatHistory = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            await axios.post('http://localhost:5001/api/chat-history/save', {
+                sessionId: sessionId.current,
+                messages: messages
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+        } catch (error) {
+            console.error('Error saving chat history:', error);
+        }
+    };
+
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (inputMessage.trim() && !isWaitingForResponse) {
             const message = inputMessage.trim();
             setInputMessage('');
+            const newMessages = [...messages, {
+                type: 'user',
+                content: message,
+                timestamp: new Date().toISOString()
+            }];
+            setMessages(newMessages);
             await sendMessageToBackend(message, 'text');
+            await saveChatHistory(); // Save after each message
         }
     };
 
@@ -242,6 +265,10 @@ const Chat = () => {
 
     const handleGetStarted = () => {
         setIsStarted(true);
+    };
+
+    const viewChatHistory = () => {
+        navigate('/chat-history');
     };
 
     const renderMicButton = () => (
