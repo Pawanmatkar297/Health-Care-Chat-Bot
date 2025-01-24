@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaHistory, FaRobot, FaUser, FaSignOutAlt, FaPaperPlane, FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
+import { FaHistory, FaRobot, FaUser, FaSignOutAlt, FaPaperPlane, FaMicrophone, FaMicrophoneSlash, FaMoon, FaBars, FaChevronLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Chat.css';
@@ -17,9 +17,23 @@ const Chat = () => {
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [audioChunks, setAudioChunks] = useState([]);
     const [isStarted, setIsStarted] = useState(false);
+    const [darkMode, setDarkMode] = useState(() => {
+        const savedMode = localStorage.getItem('darkMode');
+        return savedMode ? JSON.parse(savedMode) : false;
+    });
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const navigate = useNavigate();
     const messagesEndRef = useRef(null);
     const sessionId = useRef(Math.random().toString(36).substring(7));
+
+    useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+        localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    }, [darkMode]);
 
     useEffect(() => {
         // Only add initial bot message when component mounts if not using get started button
@@ -271,6 +285,14 @@ const Chat = () => {
         navigate('/chat-history');
     };
 
+    const toggleDarkMode = () => {
+        setDarkMode(prev => !prev);
+    };
+
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed(!isSidebarCollapsed);
+    };
+
     const renderMicButton = () => (
         <button 
             type="button" 
@@ -285,33 +307,53 @@ const Chat = () => {
     return (
         <div className="chat-container">
             {/* Sidebar */}
-            <div className="sidebar">
+            <div className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
                 <div className="sidebar-header">
-                <img src="/bot_assistant_QWK_icon.ico" alt="MedAssist Logo" className="clogo" />
-                    <h2>MedAssist</h2>
+                    <img src="/bot_assistant_QWK_icon.ico" alt="MedAssist Logo" className="clogo" />
+                    {!isSidebarCollapsed && <h2>MedAssist</h2>}
+                    <button className="collapse-button" onClick={toggleSidebar}>
+                        {isSidebarCollapsed ? <FaBars /> : <FaChevronLeft />}
+                    </button>
                 </div>
                 
                 <div className="sidebar-menu">
-                    <button className="menu-item active">
-                        <FaHistory /> Chat History
-                    </button>
-                    {/* <button className="menu-item">
-                        <FaBook /> Prompt Library
-                    </button> */}
-                    {/* <button className="menu-item">
-                        <FaStar /> Favorites
-                    </button> */}
-                    {/* <button className="menu-item">
-                        <FaChartBar /> Statistics
-                    </button> */}
-                    {/* <button className="menu-item">
-                        <FaCog /> Settings
-                    </button> */}
+                    <div className="menu-section">
+                        <button className="menu-item active">
+                            <FaHistory /> {!isSidebarCollapsed && 'Chat History'}
+                        </button>
+                    </div>
+
+                    <div className="menu-section settings">
+                        <h3 className="menu-title">{!isSidebarCollapsed && 'Settings'}</h3>
+                        <label className="toggle-switch">
+                            <span>
+                                <FaMoon /> {!isSidebarCollapsed && 'Theme'}
+                            </span>
+                            <div className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={darkMode}
+                                    onChange={toggleDarkMode}
+                                />
+                                <span className="slider"></span>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
-                <button className="logout-button" onClick={handleLogout}>
-                    <FaSignOutAlt /> Log Out
-                </button>
+                <div className="sidebar-footer">
+                    {!isSidebarCollapsed && (
+                        <div className="user-info">
+                            <div className="user-avatar">
+                                <FaUser />
+                            </div>
+                            <span className="username">{localStorage.getItem('username')}</span>
+                        </div>
+                    )}
+                    <button className="logout-button" onClick={handleLogout}>
+                        <FaSignOutAlt /> {!isSidebarCollapsed && 'Log Out'}
+                    </button>
+                </div>
             </div>
 
             {/* Main Chat Area */}
