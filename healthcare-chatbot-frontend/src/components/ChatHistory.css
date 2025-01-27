@@ -1,10 +1,10 @@
 .chat-history-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 2rem auto;
-    padding: 1rem;
+    padding: 2rem;
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .chat-history-header {
@@ -12,129 +12,193 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eef2f5;
 }
 
 .back-button {
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
+    padding: 0.75rem 1.5rem;
+    background-color: #1976D2;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .back-button:hover {
-    background-color: #0056b3;
+    background-color: #1565C0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
 }
 
 .chat-history-content {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 350px 1fr;
     gap: 2rem;
-    height: 70vh;
+    height: 75vh;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .sessions-list {
-    border-right: 1px solid #eee;
+    border-right: 1px solid #eef2f5;
     overflow-y: auto;
-    padding-right: 1rem;
+    padding: 1.5rem;
+    background: #f8fafc;
 }
 
 .session-item {
-    padding: 1rem;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    padding: 1.25rem;
+    border: 1px solid #eef2f5;
+    border-radius: 12px;
     margin-bottom: 1rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .session-item:hover {
-    background-color: #f8f9fa;
-    border-color: #007bff;
+    background-color: #f8fafc;
+    border-color: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .session-item.selected {
-    background-color: #e9ecef;
-    border-color: #007bff;
+    background-color: #EDF7FF;
+    border-color: #1976D2;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
 }
 
 .session-date {
     font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 0.5rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
 }
 
 .session-preview {
-    font-size: 0.9rem;
-    color: #495057;
+    font-size: 0.95rem;
+    color: #334155;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.5;
 }
 
 .session-details {
     overflow-y: auto;
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 12px;
 }
 
 .messages-container {
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .message {
+    display: flex;
+    gap: 12px;
+    max-width: 70%;
     margin-bottom: 1rem;
-    padding: 1rem;
-    border-radius: 4px;
-    max-width: 80%;
+    animation: fadeIn 0.3s ease;
 }
 
 .message.user {
-    background-color: #007bff;
-    color: white;
     margin-left: auto;
+    flex-direction: row-reverse;
 }
 
 .message.bot {
-    background-color: #e9ecef;
-    color: #212529;
+    margin-right: auto;
+}
+
+.message-content {
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    color: #334155;
+    line-height: 1.6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.message.user .message-content,
+.message.bot .message-content {
+    background-color: #f8fafc;
+    color: #334155;
 }
 
 .message.system {
-    background-color: #ffc107;
+    background-color: rgba(255, 193, 7, 0.1);
     color: #212529;
     margin: 1rem auto;
     text-align: center;
+    max-width: 90%;
+    padding: 1rem;
+    border-radius: 8px;
 }
 
 .message-timestamp {
-    font-size: 0.8rem;
-    color: #6c757d;
+    font-size: 0.75rem;
+    color: #94a3b8;
     margin-top: 0.5rem;
+    opacity: 0.8;
 }
 
 .no-session-selected {
     text-align: center;
-    color: #6c757d;
-    padding: 2rem;
+    color: #64748b;
+    padding: 4rem 2rem;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin: 2rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 768px) {
+    .chat-history-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+
     .chat-history-content {
         grid-template-columns: 1fr;
+        height: auto;
     }
 
     .sessions-list {
         border-right: none;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-        height: auto;
+        border-bottom: 1px solid #eef2f5;
+        padding: 1rem;
         max-height: 300px;
+    }
+
+    .session-details {
+        padding: 1rem;
+    }
+
+    .message {
+        max-width: 85%;
     }
 } 

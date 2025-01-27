@@ -5,6 +5,10 @@ from nltk.stem import WordNetLemmatizer
 import pandas as pd
 import re
 import os
+import traceback
+from fuzzywuzzy import fuzz
+from difflib import SequenceMatcher
+import numpy as np
 
 class HealthcareChatbot:
     def __init__(self):
@@ -16,6 +20,17 @@ class HealthcareChatbot:
         dataset_path = os.path.join(current_dir, 'MedDatasetFinal_modeled.csv')
         self.intents_df = self.load_intents(dataset_path)
         self.symptom_columns = ['Symptom_1', 'Symptom_2', 'Symptom_3', 'Symptom_4']
+        
+        # Initialize symptom importance weights
+        self.symptom_weights = {
+            'Symptom_1': 1.0,  # Primary symptom gets full weight
+            'Symptom_2': 0.8,  # Secondary symptoms get slightly lower weights
+            'Symptom_3': 0.6,
+            'Symptom_4': 0.4
+        }
+        
+        # Create symptom similarity cache
+        self.similarity_cache = {}
 
     def load_intents(self, file_path):
         df = pd.read_csv(file_path)
@@ -38,52 +53,140 @@ class HealthcareChatbot:
     def preprocess_text(self, text):
         try:
             # Convert to lowercase and remove punctuation
-            text = re.sub(r'[^\w\s]', '', text.lower())
+            text = text.lower()
+            
+            # Keep hyphens for medical terms (e.g., "non-specific")
+            text = re.sub(r'[^\w\s-]', '', text)
             
             # Tokenize
             tokens = word_tokenize(text)
             
-            # Remove stopwords and lemmatize
-            processed_tokens = [
-                self.lemmatizer.lemmatize(token) 
-                for token in tokens 
-                if token not in self.stop_words
-            ]
+            # Custom stopwords for medical context
+            medical_stopwords = {'the', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'a', 'an', 'is', 'are', 'was', 'were'}
+            self.stop_words = self.stop_words - medical_stopwords
             
-            return ' '.join(processed_tokens)
+            # Remove stopwords and lemmatize, but keep medical terms intact
+            processed_tokens = []
+            for token in tokens:
+                if token not in self.stop_words or '-' in token:  # Keep hyphenated terms
+                    lemmatized = self.lemmatizer.lemmatize(token)
+                    processed_tokens.append(lemmatized)
+            
+            processed_text = ' '.join(processed_tokens)
+            print(f"Preprocessed text: '{text}' -> '{processed_text}'")
+            return processed_text
+            
         except Exception as e:
             print(f"Error preprocessing text: {str(e)}")
             return text  # Return original text if processing fails
 
+    def calculate_symptom_similarity(self, symptom1, symptom2):
+        """Calculate similarity between two symptoms using multiple metrics."""
+        if not symptom1 or not symptom2:
+            return 0.0
+            
+        cache_key = tuple(sorted([str(symptom1).lower(), str(symptom2).lower()]))
+        if cache_key in self.similarity_cache:
+            return self.similarity_cache[cache_key]
+
+        # Convert to lowercase strings
+        s1, s2 = str(symptom1).lower(), str(symptom2).lower()
+        
+        # Calculate different similarity metrics
+        ratio = fuzz.ratio(s1, s2) / 100.0
+        partial_ratio = fuzz.partial_ratio(s1, s2) / 100.0
+        token_sort_ratio = fuzz.token_sort_ratio(s1, s2) / 100.0
+        sequence_ratio = SequenceMatcher(None, s1, s2).ratio()
+        
+        # Combine metrics with weights
+        similarity = (ratio * 0.3 + 
+                     partial_ratio * 0.3 + 
+                     token_sort_ratio * 0.2 + 
+                     sequence_ratio * 0.2)
+        
+        self.similarity_cache[cache_key] = similarity
+        return similarity
+
     def find_matching_diseases(self, symptoms):
         try:
-            # Create a mask for matching symptoms
-            mask = pd.DataFrame(False, index=self.intents_df.index, columns=['match'])
+            print(f"Searching for symptoms: {symptoms}")
             
-            for symptom in symptoms:
-                symptom_match = self.intents_df[self.symptom_columns].apply(
-                    lambda x: x.str.contains(symptom, case=False, na=False)
-                ).any(axis=1)
-                mask['match'] |= symptom_match
+            # Calculate similarity scores for each disease
+            disease_scores = []
             
-            matches = self.intents_df[mask['match']]
-            print(f"Found {len(matches)} matches for symptoms: {symptoms}")
-            return matches
+            for idx, row in self.intents_df.iterrows():
+                disease_score = 0.0
+                matched_symptoms = set()
+                
+                # For each user symptom
+                for user_symptom in symptoms:
+                    best_symptom_match = 0.0
+                    
+                    # Compare with each disease symptom
+                    for col in self.symptom_columns:
+                        disease_symptom = row[col]
+                        if pd.isna(disease_symptom):
+                            continue
+                            
+                        # Calculate similarity
+                        similarity = self.calculate_symptom_similarity(user_symptom, disease_symptom)
+                        
+                        # Apply column weight
+                        weighted_similarity = similarity * self.symptom_weights[col]
+                        
+                        if weighted_similarity > best_symptom_match:
+                            best_symptom_match = weighted_similarity
+                    
+                    disease_score += best_symptom_match
+                
+                # Normalize score by number of symptoms
+                if symptoms:
+                    disease_score /= len(symptoms)
+                
+                disease_scores.append({
+                    'index': idx,
+                    'disease': row['Disease'],
+                    'score': disease_score
+                })
+            
+            # Sort diseases by score
+            disease_scores.sort(key=lambda x: x['score'], reverse=True)
+            
+            # Filter diseases with score above threshold
+            threshold = 0.3  # Adjust this threshold as needed
+            matching_indices = [d['index'] for d in disease_scores if d['score'] > threshold]
+            
+            if not matching_indices:
+                return pd.DataFrame()
+            
+            matches = self.intents_df.loc[matching_indices].copy()
+            
+            # Add scores to the matches
+            matches['match_score'] = [d['score'] for d in disease_scores if d['score'] > threshold]
+            
+            print(f"Found {len(matches)} matches with scores above {threshold}:")
+            for _, match in matches.iterrows():
+                print(f"Disease: {match['Disease']}, Score: {match['match_score']:.2f}")
+            
+            return matches.sort_values('match_score', ascending=False)
             
         except Exception as e:
             print(f"Error in find_matching_diseases: {str(e)}")
-            return pd.DataFrame()  # Return empty DataFrame on error
+            print(f"Full traceback: {traceback.format_exc()}")
+            return pd.DataFrame()
 
     def generate_response(self, disease):
         try:
-            # Get symptoms
+            # Get symptoms with confidence scores
+            match_score = disease.get('match_score', 0)
+            confidence_level = "high" if match_score > 0.7 else "moderate" if match_score > 0.5 else "low"
+            
             symptoms = [
                 symptom for symptom in disease[self.symptom_columns]
                 if pd.notna(symptom) and symptom.lower() != 'unknown'
             ]
             symptom_list = ', '.join(symptoms) if symptoms else ''
 
-            # Get medications
             medication_columns = ['Medication_1', 'Medication_2', 'Medication_3', 'Medication_4']
             medications = [
                 med for med in disease[medication_columns]
@@ -91,8 +194,10 @@ class HealthcareChatbot:
             ]
             medication_list = ', '.join(medications) if medications else ''
 
-            # Build response
-            response = [f"Based on your symptoms, it could be {disease['Disease']}."]
+            # Build response with confidence level
+            response = [
+                f"Based on your symptoms, there is a {confidence_level} likelihood that it could be {disease['Disease']}."
+            ]
             
             if symptom_list:
                 response.append(f"Common symptoms include: {symptom_list}.")
@@ -100,6 +205,9 @@ class HealthcareChatbot:
             if medication_list:
                 response.append(f"Typical treatments might involve: {medication_list}.")
             
+            if confidence_level != "high":
+                response.append("Given the symptom match confidence level, please consider alternative conditions as well.")
+                
             response.append("Please note: This is not a definitive diagnosis. Consult a healthcare professional for proper medical advice.")
             
             return ' '.join(response)
