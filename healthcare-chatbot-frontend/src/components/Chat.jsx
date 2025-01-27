@@ -142,16 +142,11 @@ const Chat = () => {
             );
 
             if (response.data.success) {
+                // Only add user message for voice input
                 if (type === 'voice' && response.data.recognized_text) {
                     setMessages(prev => [...prev, {
                         type: 'user',
                         content: response.data.recognized_text,
-                        timestamp: new Date().toISOString()
-                    }]);
-                } else if (type === 'text') {
-                    setMessages(prev => [...prev, {
-                        type: 'user',
-                        content: message,
                         timestamp: new Date().toISOString()
                     }]);
                 }
@@ -177,6 +172,25 @@ const Chat = () => {
         }
     };
 
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (inputMessage.trim() && !isWaitingForResponse) {
+            const message = inputMessage.trim();
+            setInputMessage(''); // Clear input immediately
+            
+            // Add user message first
+            setMessages(prev => [...prev, {
+                type: 'user',
+                content: message,
+                timestamp: new Date().toISOString()
+            }]);
+
+            // Then send to backend
+            await sendMessageToBackend(message, 'text');
+            await saveChatHistory(); // Save after each message
+        }
+    };
+
     const saveChatHistory = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -190,16 +204,6 @@ const Chat = () => {
             });
         } catch (error) {
             console.error('Error saving chat history:', error);
-        }
-    };
-
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
-        if (inputMessage.trim() && !isWaitingForResponse) {
-            const message = inputMessage.trim();
-            setInputMessage('');
-            await sendMessageToBackend(message, 'text');
-            await saveChatHistory(); // Save after each message
         }
     };
 
