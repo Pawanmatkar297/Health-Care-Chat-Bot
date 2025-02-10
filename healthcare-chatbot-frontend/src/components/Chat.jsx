@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaHistory, FaRobot, FaUser, FaSignOutAlt, FaPaperPlane, FaMicrophone, FaMicrophoneSlash, FaMoon, FaBars, FaChevronLeft, FaUserMd } from 'react-icons/fa';
+import { FaHistory, FaRobot, FaUser, FaSignOutAlt, FaPaperPlane, FaMicrophone, FaMicrophoneSlash, FaMoon, FaBars, FaChevronLeft, FaUserMd, FaLanguage } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Chat.css';
@@ -10,6 +10,7 @@ const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
+    const [selectedLanguage, setSelectedLanguage] = useState('en');
     const [isListening, setIsListening] = useState(false);
     const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
     const [microphonePermission, setMicrophonePermission] = useState(false);
@@ -24,9 +25,11 @@ const Chat = () => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [currentTypingMessage, setCurrentTypingMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const navigate = useNavigate();
     const messagesEndRef = useRef(null);
     const sessionId = useRef(Math.random().toString(36).substring(7));
+    const messagesContainerRef = useRef(null);
 
     useEffect(() => {
         if (darkMode) {
@@ -42,48 +45,140 @@ const Chat = () => {
         if (isStarted) {
             setMessages([{
                 type: 'bot',
-                content: 'Hello! How can I assist you today? Please describe your symptoms.',
+                content: selectedLanguage === 'en' 
+                    ? 'Hello! How can I assist you today? Please describe your symptoms.'
+                    : 'नमस्ते! मैं आपकी कैसे मदद कर सकता हूं? कृपया अपने लक्षणों का वर्णन करें।',
                 timestamp: new Date().toISOString()
             }]);
         }
 
         // Check microphone permission
         checkMicrophonePermission();
-    }, [isStarted]);
+    }, [isStarted, selectedLanguage]);
+
+    useEffect(() => {
+        // Load and handle speech synthesis voices
+        const loadVoices = () => {
+            // Get the list of voices
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                console.log('Voices loaded:', voices.length);
+            }
+        };
+
+        // Chrome loads voices asynchronously
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices(); // Initial load attempt
+        }
+    }, []);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (shouldAutoScroll && messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
     };
+
+    const handleScroll = () => {
+        if (!messagesContainerRef.current) return;
+        
+        const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+        const isScrolledToBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 50;
+        setShouldAutoScroll(isScrolledToBottom);
+    };
+
+    useEffect(() => {
+        const messagesContainer = messagesContainerRef.current;
+        if (messagesContainer) {
+            messagesContainer.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (messagesContainer) {
+                messagesContainer.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
     // Text to Speech setup
-    const speak = (text) => {
+    const speak = (text, language) => {
         if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1; // Speed of speech
-            utterance.pitch = 1; // Pitch of voice
-            utterance.volume = 1; // Volume
+            
+            // Wait for voices to load and configure speech based on language
+            const voices = window.speechSynthesis.getVoices();
+            if (language === 'hi') {
+                // Try to find a Hindi voice
+                const hindiVoice = voices.find(voice => 
+                    voice.lang.includes('hi') || 
+                    voice.name.toLowerCase().includes('hindi')
+                );
+                if (hindiVoice) {
+                    console.log('Using Hindi voice:', hindiVoice.name);
+                    utterance.voice = hindiVoice;
+                    utterance.lang = 'hi-IN';
+                } else {
+                    console.log('No Hindi voice found, using default voice with adjusted properties');
+                    utterance.rate = 0.9; // Slower for Hindi
+                    utterance.pitch = 1;
+                    utterance.lang = 'hi-IN';
+                }
+            } else {
+                // Try to find an English voice
+                const englishVoice = voices.find(voice => 
+                    voice.lang.includes('en-US') || 
+                    voice.lang.includes('en-GB')
+                );
+                if (englishVoice) {
+                    console.log('Using English voice:', englishVoice.name);
+                    utterance.voice = englishVoice;
+                }
+                utterance.rate = 1; // Normal speed for English
+                utterance.pitch = 1;
+                utterance.lang = 'en-US';
+            }
+            
+            utterance.volume = 1;
+            
+            // Add error handling
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event);
+            };
+
+            // Speak the text
             window.speechSynthesis.speak(utterance);
         }
     };
 
-    // Typing animation function
-    const typeMessage = async (message) => {
+    // Typing animation function with simultaneous speech
+    const typeMessage = async (message, shouldSpeak = true) => {
         setIsTyping(true);
         let currentText = '';
         const delay = 30; // Delay between each character
 
+        // Start speaking the entire message immediately
+        if (shouldSpeak) {
+            speak(message, selectedLanguage);
+        }
+
         // Add temporary typing message
-        setMessages(prev => [...prev, {
+        const newMessage = {
             type: 'bot',
             content: '',
             isTyping: true,
             timestamp: new Date().toISOString()
-        }]);
+        };
+        
+        setMessages(prev => [...prev, newMessage]);
 
+        // Type out the message character by character
         for (let i = 0; i < message.length; i++) {
             currentText += message[i];
             setMessages(prev => prev.map((msg, index) => {
@@ -95,20 +190,58 @@ const Chat = () => {
             await new Promise(resolve => setTimeout(resolve, delay));
         }
 
-        // Update the final message and speak
-        setMessages(prev => prev.map((msg, index) => {
-            if (index === prev.length - 1 && msg.isTyping) {
-                return {
-                    type: 'bot',
-                    content: message,
-                    timestamp: new Date().toISOString()
-                };
-            }
-            return msg;
-        }));
+        // Update the final message and ensure it's stored in state
+        const finalMessage = {
+            type: 'bot',
+            content: message,
+            timestamp: new Date().toISOString()
+        };
         
-        setIsTyping(false);
-        speak(message); // Speak after typing is complete
+        return new Promise((resolve) => {
+            setMessages(prev => {
+                const newMessages = prev.map((msg, index) => {
+                    if (index === prev.length - 1 && msg.isTyping) {
+                        return finalMessage;
+                    }
+                    return msg;
+                });
+                // Save chat history after updating messages
+                saveChatHistory();
+                resolve();
+                return newMessages;
+            });
+            
+            setIsTyping(false);
+        });
+    };
+
+    const saveChatHistory = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Wait for state updates to be reflected
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Get the latest messages directly from state
+            const currentMessages = messages.map(msg => ({
+                ...msg,
+                timestamp: msg.timestamp || new Date().toISOString()
+            }));
+
+            // Only save if there are messages
+            if (currentMessages.length > 0) {
+                await axios.post('http://localhost:5001/api/chat-history/save', {
+                    sessionId: sessionId.current,
+                    messages: currentMessages
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log('Chat history saved successfully');
+            }
+        } catch (error) {
+            console.error('Error saving chat history:', error);
+        }
     };
 
     const sendMessageToBackend = async (message, type = 'text', audioBlob = null) => {
@@ -117,17 +250,30 @@ const Chat = () => {
             let data;
             let headers = {};
             
+            // Add user message first for text input
+            if (type === 'text') {
+                const userMessage = {
+                    type: 'user',
+                    content: message,
+                    timestamp: new Date().toISOString()
+                };
+                setMessages(prev => [...prev, userMessage]);
+                await saveChatHistory(); // Save after user message
+            }
+            
             if (type === 'voice' && audioBlob) {
                 data = new FormData();
                 data.append('type', type);
                 data.append('session_id', sessionId.current);
                 data.append('audio', audioBlob, 'recording.wav');
+                data.append('language', selectedLanguage);
                 headers['Content-Type'] = 'multipart/form-data';
             } else {
                 data = {
                     message: message,
                     type: type,
-                    session_id: sessionId.current
+                    session_id: sessionId.current,
+                    language: selectedLanguage
                 };
                 headers['Content-Type'] = 'application/json';
             }
@@ -144,17 +290,54 @@ const Chat = () => {
             if (response.data.success) {
                 // Only add user message for voice input
                 if (type === 'voice' && response.data.recognized_text) {
-                    setMessages(prev => [...prev, {
+                    const voiceMessage = {
                         type: 'user',
                         content: response.data.recognized_text,
                         timestamp: new Date().toISOString()
-                    }]);
+                    };
+                    setMessages(prev => [...prev, voiceMessage]);
+                    await saveChatHistory(); // Save after voice message
                 }
 
                 // Add bot's response with typing animation
                 await typeMessage(response.data.message);
+                
+                // If this is the final message (user said 'no'), ensure everything is saved
+                if (message.toLowerCase() === 'no') {
+                    // Wait for state updates
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // If there's a final output message, add it
+                    if (response.data.final_output) {
+                        const finalMessage = {
+                            type: 'bot',
+                            content: response.data.final_output,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        // Update messages with final output
+                        setMessages(prev => [...prev, finalMessage]);
+                        
+                        // Wait for state update and save
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        await saveChatHistory();
+                        
+                        // Add final diagnosis message
+                        const diagnosisMessage = {
+                            type: 'system',
+                            content: 'Consultation completed. Final assessment has been saved.',
+                            timestamp: new Date().toISOString()
+                        };
+                        setMessages(prev => [...prev, diagnosisMessage]);
+                        
+                        // Final save
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        await saveChatHistory();
+                    }
+                }
 
                 if (response.data.is_final) {
+                    await saveChatHistory(); // Save before changing session
                     sessionId.current = Math.random().toString(36).substring(7);
                 }
             } else {
@@ -162,13 +345,18 @@ const Chat = () => {
             }
         } catch (error) {
             console.error('Error:', error);
-            setMessages(prev => [...prev, {
+            const errorMessage = {
                 type: 'system',
-                content: error.message || 'Error processing your message. Please try again.',
+                content: selectedLanguage === 'en' 
+                    ? 'Error processing your message. Please try again.'
+                    : 'आपका संदेश प्रोसेस करने में त्रुटि। कृपया पुनः प्रयास करें।',
                 timestamp: new Date().toISOString()
-            }]);
+            };
+            setMessages(prev => [...prev, errorMessage]);
+            await saveChatHistory();
         } finally {
             setIsWaitingForResponse(false);
+            await saveChatHistory();
         }
     };
 
@@ -177,33 +365,7 @@ const Chat = () => {
         if (inputMessage.trim() && !isWaitingForResponse) {
             const message = inputMessage.trim();
             setInputMessage(''); // Clear input immediately
-            
-            // Add user message first
-            setMessages(prev => [...prev, {
-                type: 'user',
-                content: message,
-                timestamp: new Date().toISOString()
-            }]);
-
-            // Then send to backend
             await sendMessageToBackend(message, 'text');
-            await saveChatHistory(); // Save after each message
-        }
-    };
-
-    const saveChatHistory = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            await axios.post('http://localhost:5001/api/chat-history/save', {
-                sessionId: sessionId.current,
-                messages: messages
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-        } catch (error) {
-            console.error('Error saving chat history:', error);
         }
     };
 
@@ -243,9 +405,9 @@ const Chat = () => {
 
         if (!isRecording) {
             try {
-                // Configure recognition
+                // Configure recognition with language support
                 recognition.continuous = false;
-                recognition.lang = 'en-US';
+                recognition.lang = selectedLanguage === 'en' ? 'en-US' : 'hi-IN';  // Set Hindi language for voice input
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
@@ -267,20 +429,30 @@ const Chat = () => {
 
                 recognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
-                    let errorMessage = 'Error with voice recognition. ';
+                    let errorMessage = selectedLanguage === 'en' 
+                        ? 'Error with voice recognition. ' 
+                        : 'आवाज पहचानने में त्रुटि। ';
                     
                     switch(event.error) {
                         case 'network':
-                            errorMessage += 'Please check your internet connection.';
+                            errorMessage += selectedLanguage === 'en'
+                                ? 'Please check your internet connection.'
+                                : 'कृपया अपना इंटरनेट कनेक्शन जांचें।';
                             break;
                         case 'not-allowed':
-                            errorMessage += 'Please allow microphone access in your browser settings.';
+                            errorMessage += selectedLanguage === 'en'
+                                ? 'Please allow microphone access in your browser settings.'
+                                : 'कृपया अपने ब्राउज़र सेटिंग्स में माइक्रोफ़ोन एक्सेस की अनुमति दें।';
                             break;
                         case 'no-speech':
-                            errorMessage += 'No speech was detected. Please try again.';
+                            errorMessage += selectedLanguage === 'en'
+                                ? 'No speech was detected. Please try again.'
+                                : 'कोई आवाज नहीं मिली। कृपया पुनः प्रयास करें।';
                             break;
                         default:
-                            errorMessage += 'Please try again.';
+                            errorMessage += selectedLanguage === 'en'
+                                ? 'Please try again.'
+                                : 'कृपया पुनः प्रयास करें।';
                     }
                     
                     setMessages(prev => [...prev, {
@@ -305,7 +477,9 @@ const Chat = () => {
                 
                 setMessages(prev => [...prev, {
                     type: 'system',
-                    content: 'Listening... Speak now.',
+                    content: selectedLanguage === 'en' 
+                        ? 'Listening... Speak now.'
+                        : 'सुन रहा हूं... अब बोलिए।',
                     timestamp: new Date().toISOString()
                 }]);
 
@@ -313,7 +487,9 @@ const Chat = () => {
                 console.error('Error starting recording:', error);
                 setMessages(prev => [...prev, {
                     type: 'system',
-                    content: 'Error accessing microphone. Please check browser permissions and try again.',
+                    content: selectedLanguage === 'en'
+                        ? 'Error accessing microphone. Please check browser permissions and try again.'
+                        : 'माइक्रोफ़ोन तक पहुंचने में त्रुटि। कृपया ब्राउज़र अनुमतियां जांचें और पुनः प्रयास करें।',
                     timestamp: new Date().toISOString()
                 }]);
                 setIsRecording(false);
@@ -373,6 +549,10 @@ const Chat = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
+    const toggleLanguage = () => {
+        setSelectedLanguage(prev => prev === 'en' ? 'hi' : 'en');
+    };
+
     const renderMicButton = () => (
         <button 
             type="button" 
@@ -411,10 +591,6 @@ const Chat = () => {
             <button className="get-started-button" onClick={handleGetStarted}>
                 Start Consultation
             </button>
-            <p className="disclaimer">
-                Note: This is not a replacement for professional medical advice. 
-                Always consult with a healthcare provider for medical decisions.
-            </p>
         </div>
     );
 
@@ -469,6 +645,13 @@ const Chat = () => {
                         </div>
                     </label>
                 </div>
+
+                <div className="menu-section language">
+                    <h3 className="menu-title">{!isSidebarCollapsed && 'Language'}</h3>
+                    <button onClick={toggleLanguage} className="menu-item">
+                        <FaLanguage /> {!isSidebarCollapsed && (selectedLanguage === 'en' ? 'Switch to Hindi' : 'अंग्रेजी में बदलें')}
+                    </button>
+                </div>
             </div>
 
             <div className="sidebar-footer">
@@ -514,7 +697,11 @@ const Chat = () => {
                     </div>
                 </div>
 
-                <div className="messages-container">
+                <div 
+                    className="messages-container" 
+                    ref={messagesContainerRef}
+                    onScroll={handleScroll}
+                >
                     {!isStarted ? renderWelcomeScreen() : (
                         <>
                             {messages.map((message, index) => renderMessage(message, index))}
@@ -532,9 +719,9 @@ const Chat = () => {
                                     </div>
                                 </div>
                             )}
+                            <div ref={messagesEndRef} />
                         </>
                     )}
-                    <div ref={messagesEndRef} />
                 </div>
 
                 <form 
