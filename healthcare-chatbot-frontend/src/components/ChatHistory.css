@@ -222,7 +222,7 @@
 }
 
 .message-content {
-    background: #f8fafc;
+    background: black;
     padding: 1rem 1.5rem;
     border-radius: 12px;
     position: relative;
@@ -230,7 +230,7 @@
 }
 
 .message.user .message-content {
-    background: #E8F5E9;
+    background: blue        ;
 }
 
 .message-text {

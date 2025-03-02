@@ -24,80 +24,12 @@ class HealthcareChatbot:
         self.intents_df = self.load_intents(dataset_path)
         self.symptom_columns = ['Symptom_1', 'Symptom_2', 'Symptom_3', 'Symptom_4']
         
-        # Add conversation patterns
-        self.greeting_patterns = {
-            'greetings': [
-                'hello', 'hi', 'hey', 'good morning', 'good afternoon', 
-                'good evening', 'namaste', 'hola', 'whats up', "what's up",
-                'howdy', 'greetings', 'sup'
-            ],
-            'goodbyes': [
-                'bye', 'goodbye', 'see you', 'take care', 'farewell',
-                'have a good day', 'until next time', 'catch you later'
-            ],
-            'thanks': [
-                'thank you', 'thanks', 'appreciate it', 'thank you so much',
-                'thanks a lot', 'grateful', 'thanking you'
-            ],
-            'how_are_you': [
-                'how are you', 'how do you do', 'how are you doing',
-                'how have you been', 'whats going on', "what's going on"
-            ],
-            'help_requests': [
-                'help', 'can you help', 'need help', 'assist', 'support',
-                'guidance', 'what can you do', 'how can you help'
-            ]
-        }
-        
-        # Add response templates
-        self.response_templates = {
-            'greetings': [
-                "Hello! I'm your healthcare assistant. How can I help you today?",
-                "Hi there! I'm here to help with your health concerns. What symptoms are you experiencing?",
-                "Welcome! I'm your medical chatbot. How may I assist you?"
-            ],
-            'goodbyes': [
-                "Take care! Remember to consult a healthcare professional for proper medical advice.",
-                "Goodbye! Stay healthy and don't hesitate to return if you need more assistance.",
-                "Have a great day! Remember, I'm here if you need help understanding your symptoms."
-            ],
-            'thanks': [
-                "You're welcome! Remember, I'm here to help understand symptoms, but always consult a doctor for proper diagnosis.",
-                "Happy to help! Don't forget to seek professional medical advice for accurate diagnosis.",
-                "Glad I could assist! Remember to verify any information with healthcare professionals."
-            ],
-            'how_are_you': [
-                "I'm functioning well and ready to help you with any health concerns. What symptoms are you experiencing?",
-                "I'm here and ready to assist you. What health issues would you like to discuss?",
-                "I'm operational and prepared to help. What medical concerns can I address for you?"
-            ],
-            'help_requests': [
-                "I can help you understand your symptoms and provide general health information. What symptoms are you experiencing?",
-                "I'm designed to help identify possible conditions based on your symptoms. What symptoms would you like to discuss?",
-                "I can assist by analyzing your symptoms and suggesting possible conditions. What symptoms are you having?"
-            ]
-        }
-        
         # Initialize symptom importance weights
         self.symptom_weights = {
             'Symptom_1': 1.0,  # Primary symptom gets full weight
             'Symptom_2': 0.8,  # Secondary symptoms get slightly lower weights
             'Symptom_3': 0.6,
             'Symptom_4': 0.4
-        }
-        
-        # Define common symptoms that should be weighted less to avoid over-matching with serious conditions
-        self.common_symptoms = {
-            'fever', 'headache', 'cough', 'fatigue', 'nausea', 'vomiting', 
-            'diarrhea', 'sore throat', 'runny nose', 'muscle pain', 'weakness',
-            'dizziness', 'cold', 'tiredness', 'body ache', 'chills'
-        }
-        
-        # Define severity levels for diseases to prioritize common conditions for common symptoms
-        self.disease_severity = {
-            'low': ['Common Cold', 'Flu', 'Gastroenteritis', 'Migraine', 'Allergic Rhinitis'],
-            'medium': ['Bronchitis', 'Sinusitis', 'Tonsillitis', 'Urinary Tract Infection'],
-            'high': ['Pneumonia', 'Meningitis', 'Sepsis', 'Cancer', 'Heart Attack']
         }
         
         # Create symptom similarity cache
@@ -269,22 +201,16 @@ class HealthcareChatbot:
             processed_symptoms = []
             for symptom in symptoms:
                 if isinstance(symptom, dict) and 'processed' in symptom:
+                    # This is a Hindi symptom that was preprocessed
                     processed_symptoms.append(symptom['processed'])
                 else:
+                    # This is an English symptom
                     processed_symptoms.append(symptom)
             
             print(f"Processed symptoms for matching: {processed_symptoms}")
             
             # Calculate similarity scores for each disease
             disease_scores = []
-            
-            # Count how many symptoms are common
-            common_symptom_count = sum(1 for symptom in processed_symptoms 
-                                     if any(common in symptom.lower() 
-                                           for common in self.common_symptoms))
-            
-            # If all symptoms are common, prioritize common conditions
-            all_symptoms_common = common_symptom_count == len(processed_symptoms)
             
             for idx, row in self.intents_df.iterrows():
                 disease_score = 0.0
@@ -303,10 +229,6 @@ class HealthcareChatbot:
                         # Calculate similarity
                         similarity = self.calculate_symptom_similarity(user_symptom, disease_symptom)
                         
-                        # Adjust similarity based on symptom commonality
-                        if any(common in user_symptom.lower() for common in self.common_symptoms):
-                            similarity *= 0.8  # Reduce weight for common symptoms
-                        
                         # Apply column weight
                         weighted_similarity = similarity * self.symptom_weights[col]
                         
@@ -319,47 +241,25 @@ class HealthcareChatbot:
                 if processed_symptoms:
                     disease_score /= len(processed_symptoms)
                 
-                # Adjust score based on disease severity and symptom commonality
-                disease_name = row['Disease']
-                if all_symptoms_common:
-                    # Boost score for common diseases if all symptoms are common
-                    if disease_name in self.disease_severity['low']:
-                        disease_score *= 1.5
-                    elif disease_name in self.disease_severity['medium']:
-                        disease_score *= 1.0
-                    elif disease_name in self.disease_severity['high']:
-                        disease_score *= 0.5
-                else:
-                    # If not all symptoms are common, maintain normal scoring
-                    if disease_name in self.disease_severity['low']:
-                        disease_score *= 1.0
-                    elif disease_name in self.disease_severity['medium']:
-                        disease_score *= 1.0
-                    elif disease_name in self.disease_severity['high']:
-                        disease_score *= 0.8
-                
                 disease_scores.append({
                     'index': idx,
-                    'disease': disease_name,
+                    'disease': row['Disease'],
                     'score': disease_score
                 })
             
             # Sort diseases by score
             disease_scores.sort(key=lambda x: x['score'], reverse=True)
             
-            # Adjust threshold based on symptom commonality
-            base_threshold = 0.3
-            if all_symptoms_common:
-                threshold = base_threshold * 1.2  # Higher threshold for common symptoms
-            else:
-                threshold = base_threshold
-            
+            # Filter diseases with score above threshold
+            threshold = 0.3  # Adjust this threshold as needed
             matching_indices = [d['index'] for d in disease_scores if d['score'] > threshold]
             
             if not matching_indices:
                 return pd.DataFrame()
             
             matches = self.intents_df.loc[matching_indices].copy()
+            
+            # Add scores to the matches
             matches['match_score'] = [d['score'] for d in disease_scores if d['score'] > threshold]
             
             print(f"Found {len(matches)} matches with scores above {threshold}:")
@@ -442,128 +342,15 @@ class HealthcareChatbot:
             error_msg = "Sorry, I encountered an error. Please try again." if language == 'en' else "क्षमा करें, एक त्रुटि हुई। कृपया पुनः प्रयास करें।"
             return error_msg
 
-    def detect_conversation_type(self, text, language='en'):
-        """Detect if the input is a greeting or conversation starter"""
-        if not text:
-            return 'symptom'
-            
-        if language == 'hi':
-            # Translate Hindi to English for pattern matching
-            text = self.translate_text(text, 'hi', 'en')
-        
-        # Clean and normalize the text
-        text = text.lower().strip()
-        words = text.split()
-        
-        # First, check if it's a single word that matches any greeting
-        if len(words) == 1:
-            word = words[0]
-            for conv_type, patterns in self.greeting_patterns.items():
-                if word in patterns or any(pattern.startswith(word) for pattern in patterns):
-                    return conv_type
-        
-        # Then check for exact matches
-        for conv_type, patterns in self.greeting_patterns.items():
-            if text in patterns:
-                return conv_type
-        
-        # Check for pattern containment
-        for conv_type, patterns in self.greeting_patterns.items():
-            for pattern in patterns:
-                # Check if the pattern is a phrase (multiple words)
-                if ' ' in pattern:
-                    if pattern in text:
-                        return conv_type
-                # For single word patterns, check if they appear as whole words
-                else:
-                    for word in words:
-                        if pattern == word:
-                            return conv_type
-        
-        # Check for combined greetings (e.g., "hi, how are you?")
-        has_greeting = any(word in self.greeting_patterns['greetings'] for word in words)
-        has_how_are_you = any(phrase in text for phrase in self.greeting_patterns['how_are_you'])
-        if has_greeting and has_how_are_you:
-            return 'how_are_you'
-            
-        # Check for questions about the chatbot's capabilities
-        if any(word in ['what', 'how'] for word in words) and any(word in ['you', 'your'] for word in words):
-            if any(word in ['do', 'can', 'could', 'help', 'assist'] for word in words):
-                return 'help_requests'
-        
-        # If the text is very short (1-2 words) and contains a greeting word
-        if len(words) <= 2:
-            for word in words:
-                for patterns in self.greeting_patterns.values():
-                    if word in patterns:
-                        return 'greetings'
-        
-        # Only if none of the above match, check if it might be a symptom
-        medical_keywords = ['pain', 'hurt', 'feel', 'suffering', 'having', 'got', 'experiencing', 'symptom', 'problem', 'issue']
-        if any(word in text for word in medical_keywords):
-            return 'symptom'
-        
-        # For very short inputs that didn't match greetings, ask for clarification
-        if len(words) <= 2:
-            return 'help_requests'
-        
-        return 'symptom'  # Default to symptom if no other patterns match
-
-    def get_conversation_response(self, conv_type, language='en'):
-        """Get appropriate response for the conversation type"""
-        if conv_type not in self.response_templates:
-            return None
-        
-        # Get a random response for variety
-        response = np.random.choice(self.response_templates[conv_type])
-        
-        # Add follow-up prompt for symptoms if not a goodbye
-        if conv_type != 'goodbyes' and 'symptoms' not in response.lower():
-            response += " What symptoms are you experiencing?"
-        
-        # Translate if needed
-        if language == 'hi':
-            response = self.translate_text(response, 'en', 'hi')
-        
-        return response
-
     def chat(self):
-        print("Healthcare Chatbot: Hello! How can I assist you today?")
-        self.text_to_speech("Hello! How can I assist you today?")
+        print("Healthcare Chatbot: Hello! How can I assist you today? Please describe your main symptom.")
+        self.text_to_speech("Hello! How can I assist you today? Please describe your main symptom.")
         
         symptoms = []
-        conversation_state = 'greeting'  # Track conversation state
-        
         while True:
-            user_input = input("You: ")
-            
-            # Detect conversation type
-            conv_type = self.detect_conversation_type(user_input)
-            
-            # Handle conversation patterns
-            if conv_type != 'symptom':
-                response = self.get_conversation_response(conv_type)
-                print(f"Healthcare Chatbot: {response}")
-                self.text_to_speech(response)
-                
-                # If it's a goodbye, end the conversation
-                if conv_type == 'goodbyes':
-                    break
-                    
-                # Update conversation state
-                conversation_state = conv_type
-                continue
-            
-            # If we reach here, treat input as symptom
-            if user_input.lower() in ['no', 'nope', 'done', 'that\'s all', 'thats all', 'nothing else']:
+            user_input = input("Healthcare Chatbot: Please describe your main symptom: ")
+            if user_input.lower() in ['no', 'nope', 'done']:
                 break
-            
-            # If we were in greeting state, provide more guidance
-            if conversation_state == 'greeting':
-                print("Healthcare Chatbot: I'm here to help identify possible health conditions. Please describe your symptoms.")
-                self.text_to_speech("I'm here to help identify possible health conditions. Please describe your symptoms.")
-                conversation_state = 'symptoms'
-                continue
             
             preprocessed_input = self.preprocess_text(user_input)
             symptoms.append(preprocessed_input)

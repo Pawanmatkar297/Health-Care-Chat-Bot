@@ -107,6 +107,8 @@ def chat():
             'message': error_message,
             'language': language
         })
+    
+
 
 if __name__ == '__main__':
     print("Starting Flask application...")
