@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from chatbot import HealthcareChatbot
+from .chatbot import HealthcareChatbot
 import traceback
 import os
 
