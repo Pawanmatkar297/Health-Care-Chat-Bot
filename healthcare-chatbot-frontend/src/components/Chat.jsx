@@ -278,14 +278,13 @@ const Chat = () => {
                 headers['Content-Type'] = 'application/json';
             }
 
-            const response = await axios.post('http://localhost:5002/api/chat', 
-                type === 'voice' ? data : JSON.stringify(data),
-                { 
-                    headers,
-                    timeout: 30000,
-                    withCredentials: true
-                }
-            );
+            const response = await fetch('https://mediasist-4t66.onrender.com/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage, session_id: sessionId }),
+            });
 
             if (response.data.success) {
                 // Only add user message for voice input
