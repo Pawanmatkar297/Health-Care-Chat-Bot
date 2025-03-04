@@ -278,20 +278,20 @@ const Chat = () => {
                 headers['Content-Type'] = 'application/json';
             }
 
-            const response = await fetch('https://mediasist-4t66.onrender.com/api/chat', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/chat`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: userMessage, session_id: sessionId }),
+                headers: headers,
+                body: JSON.stringify(data),
             });
 
-            if (response.data.success) {
+            const responseData = await response.json(); // Parse the response
+
+            if (responseData.success) {
                 // Only add user message for voice input
-                if (type === 'voice' && response.data.recognized_text) {
+                if (type === 'voice' && responseData.recognized_text) {
                     const voiceMessage = {
                         type: 'user',
-                        content: response.data.recognized_text,
+                        content: responseData.recognized_text,
                         timestamp: new Date().toISOString()
                     };
                     setMessages(prev => [...prev, voiceMessage]);
@@ -299,7 +299,7 @@ const Chat = () => {
                 }
 
                 // Add bot's response with typing animation
-                await typeMessage(response.data.message);
+                await typeMessage(responseData.message);
                 
                 // If this is the final message (user said 'no'), ensure everything is saved
                 if (message.toLowerCase() === 'no') {
@@ -307,10 +307,10 @@ const Chat = () => {
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     
                     // If there's a final output message, add it
-                    if (response.data.final_output) {
+                    if (responseData.final_output) {
                         const finalMessage = {
                             type: 'bot',
-                            content: response.data.final_output,
+                            content: responseData.final_output,
                             timestamp: new Date().toISOString()
                         };
                         
@@ -335,12 +335,12 @@ const Chat = () => {
                     }
                 }
 
-                if (response.data.is_final) {
+                if (responseData.is_final) {
                     await saveChatHistory(); // Save before changing session
                     sessionId.current = Math.random().toString(36).substring(7);
                 }
             } else {
-                throw new Error(response.data.message || 'Error processing request');
+                throw new Error(responseData.message || 'Error processing request');
             }
         } catch (error) {
             console.error('Error:', error);
