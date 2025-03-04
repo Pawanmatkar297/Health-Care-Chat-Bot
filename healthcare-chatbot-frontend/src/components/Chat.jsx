@@ -252,12 +252,12 @@ const Chat = () => {
             
             // Add user message first for text input
             if (type === 'text') {
-                const userMessage = {
+                const currentUserMessage = {
                     type: 'user',
                     content: message,
                     timestamp: new Date().toISOString()
                 };
-                setMessages(prev => [...prev, userMessage]);
+                setMessages(prev => [...prev, currentUserMessage]);
                 await saveChatHistory(); // Save after user message
             }
             
