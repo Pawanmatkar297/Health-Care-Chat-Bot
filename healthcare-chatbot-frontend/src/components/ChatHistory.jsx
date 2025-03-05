@@ -23,7 +23,7 @@ const ChatHistory = () => {
                 return;
             }
 
-            const response = await axios.get('http://localhost:5001/api/chat-history/sessions', {
+            const response = await axios.get('https://mediassist-4t66.onrender.com/api/chat-history/sessions', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -45,7 +45,7 @@ const ChatHistory = () => {
     const fetchSessionDetails = async (sessionId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:5001/api/chat-history/session/${sessionId}`, {
+            const response = await axios.get(`https://mediassist-4t66.onrender.com/api/chat-history/session/${sessionId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

@@ -41,7 +41,7 @@ const Register = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/signup', 
+            const response = await axios.post('https://mediassist-4t66.onrender.com/api/auth/signup', 
                 {
                     username: formData.username,
                     email: formData.email,

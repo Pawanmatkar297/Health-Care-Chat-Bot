@@ -231,7 +231,7 @@ const Chat = () => {
 
             // Only save if there are messages
             if (currentMessages.length > 0) {
-                await axios.post('http://localhost:5001/api/chat-history/save', {
+                await axios.post('https://mediassist-4t66.onrender.com/api/chat-history/save', {
                     sessionId: sessionId.current,
                     messages: currentMessages
                 }, {
@@ -252,12 +252,12 @@ const Chat = () => {
             
             // Add user message first for text input
             if (type === 'text') {
-                const currentUserMessage = {
+                const userMessage = {
                     type: 'user',
                     content: message,
                     timestamp: new Date().toISOString()
                 };
-                setMessages(prev => [...prev, currentUserMessage]);
+                setMessages(prev => [...prev, userMessage]);
                 await saveChatHistory(); // Save after user message
             }
             

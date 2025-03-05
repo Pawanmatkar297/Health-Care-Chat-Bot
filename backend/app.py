@@ -3,6 +3,7 @@ from flask_cors import CORS
 from .chatbot import HealthcareChatbot
 import traceback
 import os
+from dotenv import load_dotenv
 
 import nltk
 print("Downloading NLTK data...")
@@ -11,9 +12,10 @@ nltk.download('stopwords')
 print("NLTK data downloaded successfully")
 
 app = Flask(__name__)
+load_dotenv()  # Load environment variables from .env file
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000", "http://localhost:5000"],
+        "origins": ["https://health-care-chat-bot.vercel.app/"],  # Use environment variable for frontend URL
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True

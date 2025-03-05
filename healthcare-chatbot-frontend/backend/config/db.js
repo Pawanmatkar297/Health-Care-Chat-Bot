@@ -8,7 +8,7 @@ const connectDB = async () => {
         // Clear any existing connections
         await mongoose.disconnect();
 
-        const mongoURI = 'mongodb+srv://root:Pawanmayekar%4010@healthcare.fpmgm.mongodb.net/?retryWrites=true&w=majority&appName=healthcare';
+          const mongoURI = process.env.MONGO_URI;
         console.log('Attempting to connect to MongoDB at:', mongoURI);
 
         const conn = await mongoose.connect(mongoURI, {

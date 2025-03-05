@@ -17,7 +17,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/login',
+            const response = await axios.post('https://mediassist-4t66.onrender.com/api/auth/login',
                 {
                     username,
                     password

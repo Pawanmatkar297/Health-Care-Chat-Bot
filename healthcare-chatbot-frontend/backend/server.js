@@ -9,8 +9,8 @@ dotenv.config();
 
 const app = express();
 
-// Connect to MongoDB
-connectDB()
+const mongoURI = process.env.MONGO_URI;
+connectDB(mongoURI)
     .then(() => console.log('Database connected successfully'))
     .catch(err => {
         console.error('Database connection error:', err);
@@ -19,7 +19,7 @@ connectDB()
 
 // CORS configuration
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5000'],
+    origin: [process.env.FRONTEND_URL],
     credentials: false,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
