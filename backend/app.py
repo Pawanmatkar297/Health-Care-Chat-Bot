@@ -13,14 +13,7 @@ print("NLTK data downloaded successfully")
 
 app = Flask(__name__)
 load_dotenv()  # Load environment variables from .env file
-CORS(app, resources={
-    r"/*": {
-        "origins": ["https://health-care-chat-bot.vercel.app/"],  # Use environment variable for frontend URL
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
-    }
-})
+CORS(app, resources={r"/*": {"origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"]}})
 
 print("Initializing chatbot...")
 # Initialize chatbot
