@@ -278,13 +278,13 @@ const Chat = () => {
                 headers['Content-Type'] = 'application/json';
             }
 
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/chat`, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(data),
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/chat`, {
+                message: message,
+                session_id: sessionId.current,
+                language: selectedLanguage
             });
 
-            const responseData = await response.json(); // Parse the response
+            const responseData = await response.data; // Parse the response
 
             if (responseData.success) {
                 // Only add user message for voice input
@@ -343,7 +343,7 @@ const Chat = () => {
                 throw new Error(responseData.message || 'Error processing request');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('API call error:', error.response?.data || error.message);
             const errorMessage = {
                 type: 'system',
                 content: selectedLanguage === 'en' 
