@@ -25,6 +25,8 @@ symptoms_dict = {}
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    print("Headers:", request.headers)
+    print("Body:", request.get_json())
     try:
         data = request.get_json()
         message = data.get('message', '').strip()
