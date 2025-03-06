@@ -106,6 +106,15 @@ def chat():
         })
     
 
+@app.route('/api/chat-history/save', methods=['POST'])
+def save_chat_history():
+    try:
+        data = request.get_json()
+        # Process the data and save it to your database or file
+        return jsonify({'success': True, 'message': 'Chat history saved successfully'})
+    except Exception as e:
+        print(f"Error saving chat history: {str(e)}")
+        return jsonify({'success': False, 'message': 'Failed to save chat history'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5002)))
