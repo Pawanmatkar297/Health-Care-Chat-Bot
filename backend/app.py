@@ -18,7 +18,12 @@ load_dotenv()  # Load environment variables from .env file
 CORS(app, 
      resources={
          r"/*": {
-             "origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000", "https://mediassist-4t66.onrender.com"],
+             "origins": [
+                 "https://health-care-chat-bot.vercel.app",
+                 "http://localhost:3000",
+                 "https://mediassist-4t66.onrender.com",
+                 "https://mediassist-backend.onrender.com"
+             ],
              "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
              "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin"],
              "expose_headers": ["Content-Type", "Authorization"],
@@ -39,7 +44,12 @@ symptoms_dict = {}
 @app.after_request
 def after_request(response):
     origin = request.headers.get('Origin')
-    allowed_origins = ["https://health-care-chat-bot.vercel.app", "http://localhost:3000", "https://mediassist-4t66.onrender.com"]
+    allowed_origins = [
+        "https://health-care-chat-bot.vercel.app",
+        "http://localhost:3000",
+        "https://mediassist-4t66.onrender.com",
+        "https://mediassist-backend.onrender.com"
+    ]
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
@@ -54,7 +64,12 @@ def after_request(response):
 def handle_options(path):
     response = jsonify({"status": "ok"})
     origin = request.headers.get('Origin')
-    allowed_origins = ["https://health-care-chat-bot.vercel.app", "http://localhost:3000", "https://mediassist-4t66.onrender.com"]
+    allowed_origins = [
+        "https://health-care-chat-bot.vercel.app",
+        "http://localhost:3000",
+        "https://mediassist-4t66.onrender.com",
+        "https://mediassist-backend.onrender.com"
+    ]
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
