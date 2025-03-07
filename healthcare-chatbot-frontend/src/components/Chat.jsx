@@ -231,7 +231,7 @@ const Chat = () => {
 
             // Only save if there are messages
             if (currentMessages.length > 0) {
-                await axios.post('https://mediassist-4t66.onrender.com/api/chat-history/save', {
+                await axios.post('https://mediassist-backend.onrender.com/api/chat-history/save', {
                     sessionId: sessionId.current,
                     messages: currentMessages
                 }, {
