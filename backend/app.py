@@ -13,7 +13,11 @@ print("NLTK data downloaded successfully")
 
 app = Flask(__name__)
 load_dotenv()  # Load environment variables from .env file
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Configure CORS to allow requests from the Vercel frontend
+CORS(app, resources={r"/*": {"origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"],
+                            "methods": ["GET", "POST", "OPTIONS"],
+                            "allow_headers": ["Content-Type", "Authorization"]}},
+     supports_credentials=True)
 
 print("Initializing chatbot...")
 # Initialize chatbot
@@ -22,6 +26,15 @@ print("Chatbot initialized successfully")
 
 # Store symptoms for each session
 symptoms_dict = {}
+
+# Add CORS headers to all responses
+@app.after_request
+def add_cors_headers(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://health-care-chat-bot.vercel.app')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 @app.route('/api/chat', methods=['POST'])
 def chat():

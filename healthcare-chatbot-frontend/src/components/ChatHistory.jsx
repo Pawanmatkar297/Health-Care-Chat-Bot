@@ -24,7 +24,12 @@ const ChatHistory = () => {
             }
 
             const response = await axios.get(`${process.env.REACT_APP_AUTH_URL}/api/chat-history/sessions`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                withCredentials: true
             });
 
             if (response.data.success) {
@@ -46,7 +51,12 @@ const ChatHistory = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get(`${process.env.REACT_APP_AUTH_URL}/api/chat-history/session/${sessionId}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                withCredentials: true
             });
 
             if (response.data.success) {

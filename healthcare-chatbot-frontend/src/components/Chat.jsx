@@ -235,7 +235,12 @@ const Chat = () => {
                     sessionId: sessionId.current,
                     messages: currentMessages
                 }, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    withCredentials: true
                 });
                 console.log('Chat history saved successfully');
             }
@@ -282,6 +287,12 @@ const Chat = () => {
                 message: message,
                 session_id: sessionId.current,
                 language: selectedLanguage
+            }, {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                withCredentials: true
             });
 
             const responseData = await response.data; // Parse the response
