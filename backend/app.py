@@ -13,11 +13,19 @@ print("NLTK data downloaded successfully")
 
 app = Flask(__name__)
 load_dotenv()  # Load environment variables from .env file
-# Configure CORS to allow requests from the Vercel frontend
-CORS(app, resources={r"/*": {"origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"],
-                            "methods": ["GET", "POST", "OPTIONS"],
-                            "allow_headers": ["Content-Type", "Authorization"]}},
-     supports_credentials=True)
+
+# Configure CORS with all necessary settings
+CORS(app, 
+     resources={
+         r"/*": {
+             "origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"],
+             "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+             "allow_headers": ["Content-Type", "Authorization", "Accept"],
+             "expose_headers": ["Content-Type", "Authorization"],
+             "supports_credentials": True,
+             "max_age": 120
+         }
+     })
 
 print("Initializing chatbot...")
 # Initialize chatbot
@@ -29,12 +37,21 @@ symptoms_dict = {}
 
 # Add CORS headers to all responses
 @app.after_request
-def add_cors_headers(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://health-care-chat-bot.vercel.app')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
+def after_request(response):
+    origin = request.headers.get('Origin')
+    if origin in ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"]:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
     return response
+
+# Handle OPTIONS requests
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    return jsonify({"status": "ok"}), 200
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
