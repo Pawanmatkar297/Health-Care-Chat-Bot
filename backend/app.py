@@ -18,9 +18,9 @@ load_dotenv()  # Load environment variables from .env file
 CORS(app, 
      resources={
          r"/*": {
-             "origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"],
+             "origins": ["https://health-care-chat-bot.vercel.app", "http://localhost:3000", "https://mediassist-4t66.onrender.com"],
              "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
-             "allow_headers": ["Content-Type", "Authorization", "Accept"],
+             "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin"],
              "expose_headers": ["Content-Type", "Authorization"],
              "supports_credentials": True,
              "max_age": 120
@@ -39,9 +39,10 @@ symptoms_dict = {}
 @app.after_request
 def after_request(response):
     origin = request.headers.get('Origin')
-    if origin in ["https://health-care-chat-bot.vercel.app", "http://localhost:3000"]:
+    allowed_origins = ["https://health-care-chat-bot.vercel.app", "http://localhost:3000", "https://mediassist-4t66.onrender.com"]
+    if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
@@ -51,7 +52,16 @@ def after_request(response):
 @app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
 @app.route('/<path:path>', methods=['OPTIONS'])
 def handle_options(path):
-    return jsonify({"status": "ok"}), 200
+    response = jsonify({"status": "ok"})
+    origin = request.headers.get('Origin')
+    allowed_origins = ["https://health-care-chat-bot.vercel.app", "http://localhost:3000", "https://mediassist-4t66.onrender.com"]
+    if origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
+    return response
 
 @app.route('/api/chat', methods=['POST'])
 def chat():

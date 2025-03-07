@@ -8,10 +8,12 @@ import axios from 'axios';
 // Configure axios defaults for all requests
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['Accept'] = 'application/json';
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-axios.defaults.headers.common['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS';
-axios.defaults.headers.common['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept';
 axios.defaults.withCredentials = true;
+
+// Remove CORS headers from client side as they should be set by the server
+delete axios.defaults.headers.common['Access-Control-Allow-Origin'];
+delete axios.defaults.headers.common['Access-Control-Allow-Methods'];
+delete axios.defaults.headers.common['Access-Control-Allow-Headers'];
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

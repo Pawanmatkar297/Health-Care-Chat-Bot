@@ -238,10 +238,7 @@ const Chat = () => {
                     headers: { 
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept'
+                        'Accept': 'application/json'
                     },
                     withCredentials: true
                 });
@@ -293,10 +290,7 @@ const Chat = () => {
             }, {
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept'
+                    'Accept': 'application/json'
                 },
                 withCredentials: true
             });
