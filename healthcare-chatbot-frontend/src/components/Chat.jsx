@@ -231,7 +231,7 @@ const Chat = () => {
 
             // Only save if there are messages
             if (currentMessages.length > 0) {
-                await axios.post('https://mediassist-backend.onrender.com/api/chat-history/save', {
+                await axios.post(`${process.env.REACT_APP_AUTH_URL}/api/chat-history/save`, {
                     sessionId: sessionId.current,
                     messages: currentMessages
                 }, {
@@ -278,7 +278,7 @@ const Chat = () => {
                 headers['Content-Type'] = 'application/json';
             }
 
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/chat`, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, {
                 message: message,
                 session_id: sessionId.current,
                 language: selectedLanguage

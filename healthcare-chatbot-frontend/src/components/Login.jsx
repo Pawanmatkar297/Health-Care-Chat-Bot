@@ -17,7 +17,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('https://mediassist-backend.onrender.com/api/auth/login',
+            const response = await axios.post(`${process.env.REACT_APP_AUTH_URL}/api/auth/login`,
                 {
                     username,
                     password
