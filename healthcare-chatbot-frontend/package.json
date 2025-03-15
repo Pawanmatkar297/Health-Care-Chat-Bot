@@ -33,7 +33,7 @@
       "react-app/jest"
     ]
   },
-  "proxy": "https://mediassist-backend.onrender.com",
+  "proxy": "https://mediassist-o69d.onrender.com",
   "browserslist": {
     "production": [
       ">0.2%",

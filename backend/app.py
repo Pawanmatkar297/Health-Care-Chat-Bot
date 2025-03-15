@@ -21,8 +21,7 @@ CORS(app,
              "origins": [
                  "https://health-care-chat-bot.vercel.app",
                  "http://localhost:3000",
-                 "https://mediassist-4t66.onrender.com",
-                 "https://mediassist-backend.onrender.com"
+                 "https://mediassist-o69d.onrender.com"
              ],
              "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
              "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin"],
@@ -47,8 +46,7 @@ def after_request(response):
     allowed_origins = [
         "https://health-care-chat-bot.vercel.app",
         "http://localhost:3000",
-        "https://mediassist-4t66.onrender.com",
-        "https://mediassist-backend.onrender.com"
+        "https://mediassist-o69d.onrender.com"
     ]
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
@@ -67,8 +65,7 @@ def handle_options(path):
     allowed_origins = [
         "https://health-care-chat-bot.vercel.app",
         "http://localhost:3000",
-        "https://mediassist-4t66.onrender.com",
-        "https://mediassist-backend.onrender.com"
+        "https://mediassist-o69d.onrender.com"
     ]
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
