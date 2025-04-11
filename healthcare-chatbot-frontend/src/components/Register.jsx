@@ -49,13 +49,8 @@ const Register = () => {
                 },
                 {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept'
-                    },
-                    withCredentials: true
+                        'Content-Type': 'application/json'
+                    }
                 }
             );
 
@@ -68,6 +63,7 @@ const Register = () => {
                 setError(response.data.message || 'Registration failed');
             }
         } catch (error) {
+            console.error('Registration error:', error);
             setError(error.response?.data?.message || 'An error occurred during registration');
         } finally {
             setIsLoading(false);

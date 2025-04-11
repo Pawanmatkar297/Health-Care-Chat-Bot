@@ -51,6 +51,14 @@ router.post('/signup', async (req, res) => {
         console.log('Signup request received:', req.body);
         const { username, email, password } = req.body;
 
+        if (!username || !email || !password) {
+            console.log('Missing required fields:', { username: !!username, email: !!email, password: !!password });
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+
         // Check if user exists
         const userExists = await User.findOne({ 
             $or: [
@@ -60,6 +68,7 @@ router.post('/signup', async (req, res) => {
         });
 
         if (userExists) {
+            console.log('User already exists:', { email: userExists.email === email, username: userExists.username === username });
             return res.status(400).json({ 
                 success: false, 
                 message: userExists.email === email ? 'Email already registered' : 'Username already taken'
@@ -67,6 +76,7 @@ router.post('/signup', async (req, res) => {
         }
 
         // Create new user
+        console.log('Creating new user...');
         const user = await User.create({
             username,
             email,
@@ -74,6 +84,7 @@ router.post('/signup', async (req, res) => {
         });
 
         if (user) {
+            console.log('User created successfully:', { username: user.username, email: user.email });
             // Generate token for immediate login
             const token = jwt.sign(
                 { userId: user._id },
@@ -92,7 +103,11 @@ router.post('/signup', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Signup error:', error);
+        console.error('Signup error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         res.status(500).json({ 
             success: false, 
             message: error.message || 'Server error during signup'
