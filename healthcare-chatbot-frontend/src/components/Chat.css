@@ -603,7 +603,7 @@ input:checked + .slider:before {
   text-align: center;
   position: relative;
   overflow: hidden;
-  min-height: calc(700vh - 4rem);
+  min-height: calc(70vh - 4rem);
   display: flex;
   flex-direction: column;
   justify-content: center;

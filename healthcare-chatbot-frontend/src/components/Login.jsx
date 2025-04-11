@@ -17,6 +17,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
+            console.log('Attempting login for user:', username);
             const response = await axios.post(`${process.env.REACT_APP_AUTH_URL}/api/auth/login`,
                 {
                     username,
@@ -24,24 +25,25 @@ const Login = () => {
                 },
                 {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept'
-                    },
-                    withCredentials: true
+                        'Content-Type': 'application/json'
+                    }
                 }
             );
 
             if (response.data.success) {
+                console.log('Login successful');
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('username', username);
                 navigate('/chat');
             } else {
+                console.error('Login failed:', response.data.message);
                 setError(response.data.message || 'Login failed');
             }
         } catch (error) {
+            console.error('Login error:', {
+                message: error.message,
+                response: error.response?.data
+            });
             setError(error.response?.data?.message || 'An error occurred during login');
         } finally {
             setIsLoading(false);
@@ -49,6 +51,7 @@ const Login = () => {
     };
 
     const handleGuestAccess = () => {
+        console.log('Accessing as guest');
         localStorage.setItem('token', 'guest-token');
         localStorage.setItem('username', 'Guest');
         navigate('/chat');
