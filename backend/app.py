@@ -19,7 +19,7 @@ CORS(app,
      resources={
          r"/*": {
              "origins": [
-                 "https://health-care-chat-bot.vercel.app",
+                 "https://mediassist-o69d.onrender.com",
                  "http://localhost:3000",
                  "https://mediassist-o69d.onrender.com"
              ],
@@ -44,7 +44,7 @@ symptoms_dict = {}
 def after_request(response):
     origin = request.headers.get('Origin')
     allowed_origins = [
-        "https://health-care-chat-bot.vercel.app",
+        "https://mediassist-o69d.onrender.com",
         "http://localhost:3000",
         "https://mediassist-o69d.onrender.com"
     ]
@@ -63,7 +63,7 @@ def handle_options(path):
     response = jsonify({"status": "ok"})
     origin = request.headers.get('Origin')
     allowed_origins = [
-        "https://health-care-chat-bot.vercel.app",
+        "https://mediassist-o69d.onrender.com",
         "http://localhost:3000",
         "https://mediassist-o69d.onrender.com"
     ]

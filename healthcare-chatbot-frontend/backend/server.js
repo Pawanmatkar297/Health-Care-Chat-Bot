@@ -19,8 +19,12 @@ connectDB(mongoURI)
 
 // CORS configuration
 app.use(cors({
-    origin: [process.env.FRONTEND_URL],
-    credentials: false,
+    origin: [
+        process.env.FRONTEND_URL,
+        'http://localhost:3000',
+        'https://mediassist-o69d.onrender.com'
+    ],
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
 }));
@@ -45,7 +49,7 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'Backend is connected!' });
 });
 
-const PORT = 5001;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
