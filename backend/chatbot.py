@@ -7,6 +7,12 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.sentiment import SentimentIntensityAnalyzer
 from spellchecker import SpellChecker
+import os
+import sys
+
+# Add the current directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from ml_model import DiseasePredictor
 import pyttsx3
 from indic_transliteration import sanscript

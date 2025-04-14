@@ -1,9 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from chatbot import MedicalChatbot
-import traceback
 import os
+import sys
+import traceback
 from dotenv import load_dotenv
+
+# Add the current directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from chatbot import MedicalChatbot
 
 import nltk
 print("Downloading NLTK data...")
