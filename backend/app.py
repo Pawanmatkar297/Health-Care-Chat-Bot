@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from .chatbot import HealthcareChatbot
+from chatbot import MedicalChatbot
 import traceback
 import os
 from dotenv import load_dotenv
@@ -9,6 +9,7 @@ import nltk
 print("Downloading NLTK data...")
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('wordnet')  # Add wordnet for lemmatization
 print("NLTK data downloaded successfully")
 
 app = Flask(__name__)
@@ -33,7 +34,7 @@ CORS(app,
 
 print("Initializing chatbot...")
 # Initialize chatbot
-chatbot = HealthcareChatbot()
+chatbot = MedicalChatbot()
 print("Chatbot initialized successfully")
 
 # Store symptoms for each session
@@ -103,22 +104,9 @@ def chat():
                 })
             
             print(f"Processing symptoms: {symptoms_dict[session_id]}")
-            # Process symptoms and generate diagnosis
-            matching_diseases = chatbot.find_matching_diseases(symptoms_dict[session_id])
-            if matching_diseases.empty:
-                response = ("I couldn't find any matching conditions for your symptoms. Please consult a healthcare professional." 
-                          if language == 'en' 
-                          else "मैं आपके लक्षणों से मेल खाती कोई स्थिति नहीं ढूंढ पाया। कृपया चिकित्सक से परामर्श करें।")
-            else:
-                disease_match_count = matching_diseases[chatbot.symptom_columns].apply(
-                    lambda x: x.str.contains('|'.join([
-                        s['processed'] if isinstance(s, dict) else s 
-                        for s in symptoms_dict[session_id]
-                    ]), case=False, na=False).sum(), 
-                    axis=1
-                )
-                best_match = matching_diseases.loc[disease_match_count.idxmax()]
-                response = chatbot.generate_response(best_match, language)
+            # Process symptoms and generate diagnosis using MedicalChatbot methods
+            results = chatbot.process_symptoms(symptoms_dict[session_id])
+            response = chatbot.generate_response(results)
             
             # Clear symptoms list for next conversation
             symptoms_dict[session_id] = []
@@ -127,12 +115,13 @@ def chat():
                 'success': True,
                 'message': response,
                 'is_final': True,
+                'final_output': response,  # Add final_output for frontend
                 'language': language
             })
 
-        # Process the symptom with language support
-        preprocessed_input = chatbot.preprocess_text(message, language)
-        symptoms_dict[session_id].append(preprocessed_input)
+        # Process the symptom
+        corrected_input = chatbot.correct_spelling(message)
+        symptoms_dict[session_id].append(corrected_input)
         
         continue_message = ("Got it. Any other symptoms? Say 'no' if you're finished." 
                           if language == 'en' 
@@ -142,7 +131,8 @@ def chat():
             'success': True,
             'message': continue_message,
             'is_final': False,
-            'language': language
+            'language': language,
+            'recognized_text': corrected_input  # Add recognized_text for frontend
         })
 
     except Exception as e:
