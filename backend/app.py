@@ -15,6 +15,7 @@ print("Downloading NLTK data...")
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')  # Add wordnet for lemmatization
+nltk.download('vader_lexicon')  # Add VADER lexicon for sentiment analysis
 print("NLTK data downloaded successfully")
 
 app = Flask(__name__)

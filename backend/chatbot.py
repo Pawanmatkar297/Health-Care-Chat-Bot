@@ -40,7 +40,12 @@ class MedicalChatbot:
         self.stop_words = set(stopwords.words('english'))
         
         # Initialize NLP components
-        self.sentiment_analyzer = SentimentIntensityAnalyzer()
+        try:
+            self.sentiment_analyzer = SentimentIntensityAnalyzer()
+        except:
+            print("Warning: Could not initialize sentiment analyzer. Sentiment analysis will be disabled.")
+            self.sentiment_analyzer = None
+            
         self.spell_checker = SpellChecker()
         self.tokenizer = RegexpTokenizer(r'\w+')
         
