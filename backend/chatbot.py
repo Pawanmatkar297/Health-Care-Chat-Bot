@@ -7,7 +7,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.sentiment import SentimentIntensityAnalyzer
 from spellchecker import SpellChecker
-from backend.ml_model import DiseasePredictor
+from ml_model import DiseasePredictor
 import pyttsx3
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
@@ -16,7 +16,11 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Initialize text-to-speech engine
-engine = pyttsx3.init()
+try:
+    engine = pyttsx3.init()
+except:
+    print("Warning: Could not initialize text-to-speech engine. TTS functionality will be disabled.")
+    engine = None
 
 class MedicalChatbot:
     def __init__(self):
