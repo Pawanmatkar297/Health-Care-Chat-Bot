@@ -6,6 +6,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app import app
 
+# This is the object that gunicorn looks for
+application = app
+
 # Get port from environment variable or default to 10000
 port = int(os.environ.get("PORT", 10000))
 
