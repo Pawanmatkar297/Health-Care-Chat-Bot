@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from .chatbot import MedicalChatbot
+from backend.chatbot import MedicalChatbot
 import traceback
 import os
 from dotenv import load_dotenv

@@ -7,7 +7,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.sentiment import SentimentIntensityAnalyzer
 from spellchecker import SpellChecker
-from ml_model import DiseasePredictor
+from backend.ml_model import DiseasePredictor
 import pyttsx3
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
