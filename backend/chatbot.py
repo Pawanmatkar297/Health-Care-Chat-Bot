@@ -11,7 +11,8 @@ import os
 import sys
 
 # Add the current directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
 
 from ml_model import DiseasePredictor
 import pyttsx3
@@ -30,8 +31,11 @@ except:
 
 class MedicalChatbot:
     def __init__(self):
+        # Get the absolute path to the CSV file
+        csv_path = os.path.join(current_dir, 'Priority_wise_MedicalDataset - Sheet1 (1).csv')
+        
         # Load and preprocess the dataset
-        self.df = pd.read_csv('Priority_wise_MedicalDataset - Sheet1 (1).csv')
+        self.df = pd.read_csv(csv_path)
         self.lemmatizer = WordNetLemmatizer()
         self.stop_words = set(stopwords.words('english'))
         
@@ -42,7 +46,7 @@ class MedicalChatbot:
         
         # Initialize ML model
         print("Initializing XGBoost model...")
-        self.ml_model = DiseasePredictor('Priority_wise_MedicalDataset - Sheet1 (1).csv')
+        self.ml_model = DiseasePredictor(csv_path)
         
         # Set confidence thresholds
         self.high_confidence = 0.6

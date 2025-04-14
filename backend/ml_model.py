@@ -30,8 +30,12 @@ class DiseasePredictor:
         self.all_symptoms = set()
         self.group_to_diseases = {}  # Initialize group mapping
         
-        # Load prevalence information
-        with open('disease_prevalence.json', 'r') as f:
+        # Get the current directory
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Load prevalence information using absolute path
+        prevalence_path = os.path.join(current_dir, 'disease_prevalence.json')
+        with open(prevalence_path, 'r') as f:
             self.prevalence_config = json.load(f)
         
         # Force new training
