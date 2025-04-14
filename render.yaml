@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mediassist-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: PYTHONPATH
+        value: /opt/render/project/src/backend 
