@@ -177,6 +177,14 @@ def save_chat_history():
         return jsonify({'success': False, 'message': 'Failed to save chat history'})
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
+    # Get port from environment variable or default to 10000 (Render's preferred port)
+    port = int(os.environ.get("PORT", 10000))
     print(f"Starting server on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)  # Added debug=False for production
+    print(f"Server will be accessible at http://0.0.0.0:{port}")
+    
+    # Ensure proper binding for production environment
+    app.run(
+        host='0.0.0.0',  # Bind to all available network interfaces
+        port=port,
+        debug=False      # Disable debug mode in production
+    )
