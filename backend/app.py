@@ -92,8 +92,12 @@ def handle_options(path):
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    print("=== New Chat Request ===")
     print("Headers:", request.headers)
     print("Body:", request.get_json())
+    print("Origin:", request.headers.get('Origin'))
+    print("Content-Type:", request.headers.get('Content-Type'))
+    print("======================")
     try:
         data = request.get_json()
         message = data.get('message', '').strip()
