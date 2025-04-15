@@ -202,9 +202,9 @@ except Exception as e:
         })
 
 # This block only runs when directly executing the file with Python
-# When running with gunicorn, this block is not executed
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
+    # For local development or direct Python execution
+    port = int(os.environ.get("PORT", 5000))
     print(f"Starting development server on port {port}")
     print(f"Server will be accessible at http://0.0.0.0:{port}")
     
@@ -213,7 +213,14 @@ if __name__ == '__main__':
         port=port,
         debug=False      # Disable debug mode in production
     )
+else:
+    # When imported by Gunicorn or other WSGI server
+    # Just print information about the environment
+    port = os.environ.get("PORT", "Not Set")
+    print(f"Flask application loaded by a WSGI server (Gunicorn)")
+    print(f"Environment PORT variable: {port}")
+    print(f"NOTE: When using gunicorn -b 0.0.0.0:$PORT, make sure PORT is set in environment")
+    print(f"Ready to serve requests")
 
 # Print a message to indicate the app has been loaded
-# This will be executed both in direct Python execution and when imported by gunicorn
-print(f"Flask application loaded successfully. Ready to serve requests on PORT={os.environ.get('PORT', '(not set)')}")
+print(f"Flask application initialization complete")
