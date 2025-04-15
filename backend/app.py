@@ -38,6 +38,14 @@ CORS(app,
          }
      })
 
+# Add a test endpoint
+@app.route('/api/test', methods=['GET'])
+def test():
+    return jsonify({
+        'status': 'success',
+        'message': 'Backend is running and accessible'
+    })
+
 print("Initializing chatbot...")
 # Initialize chatbot
 chatbot = MedicalChatbot()
