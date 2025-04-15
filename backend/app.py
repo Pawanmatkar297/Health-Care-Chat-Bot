@@ -177,14 +177,18 @@ def save_chat_history():
         return jsonify({'success': False, 'message': 'Failed to save chat history'})
 
 if __name__ == '__main__':
-    # Get port from environment variable or default to 10000 (Render's preferred port)
+    # This block only runs when directly executing the file with Python
+    # When running with gunicorn, this block is not executed
     port = int(os.environ.get("PORT", 10000))
-    print(f"Starting server on port {port}")
+    print(f"Starting development server on port {port}")
     print(f"Server will be accessible at http://0.0.0.0:{port}")
     
-    # Ensure proper binding for production environment
     app.run(
         host='0.0.0.0',  # Bind to all available network interfaces
         port=port,
         debug=False      # Disable debug mode in production
     )
+
+# Print a message to indicate the app has been loaded
+# This will be executed both in direct Python execution and when imported by gunicorn
+print(f"Flask application loaded successfully. Ready to serve requests on PORT={os.environ.get('PORT', '(not set)')}")
