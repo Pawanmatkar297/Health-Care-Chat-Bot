@@ -177,10 +177,6 @@ def save_chat_history():
         return jsonify({'success': False, 'message': 'Failed to save chat history'})
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    port = int(os.environ.get("PORT", 8000))  # Changed default port to 8000
-=======
     port = int(os.environ.get("PORT", 5000))
->>>>>>> latest_fixes
     print(f"Starting server on port {port}")
     app.run(host='0.0.0.0', port=port, debug=False)  # Added debug=False for production
