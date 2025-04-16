@@ -1,10 +1,7 @@
 FROM python:3.11-slim
 
-# Install system dependencies including espeak
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    espeak \
-    espeak-ng \
-    libespeak-ng1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -19,11 +16,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Set environment variables
+# Make port 10000 available to the world outside this container
+EXPOSE 10000
+
+# Set environment variable for Flask
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
 ENV PORT=10000
 
-# Expose the port
-EXPOSE $PORT
-
 # Command to run the application
-CMD ["python", "run.py"] 
+CMD gunicorn --bind 0.0.0.0:$PORT app:app 

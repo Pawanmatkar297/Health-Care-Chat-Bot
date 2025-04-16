@@ -18,7 +18,7 @@ import os
 warnings.filterwarnings('ignore')
 
 class MedicalChatbot:
-    def __init__(self, language='english'):
+    def __init__(self, language='english', enable_tts=True):
         # Set language preference
         self.language = language.lower()
         self.translator = Translator()
@@ -42,27 +42,31 @@ class MedicalChatbot:
         self.ml_model = DiseasePredictor(csv_file)
         
         # Initialize text-to-speech engine with fallback
-        try:
-            self.tts_engine = pyttsx3.init()
-            # Configure the TTS engine
-            self.tts_engine.setProperty('rate', 150)  # Speed of speech
-            self.tts_engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
-            
-            # Get available voices and set a voice
-            voices = self.tts_engine.getProperty('voices')
-            if voices:  # If voices are available, select a voice
-                # Try to select a female voice if available
-                female_voices = [v for v in voices if v.gender == 'female']
-                if female_voices:
-                    self.tts_engine.setProperty('voice', female_voices[0].id)
-                else:
-                    # Otherwise, use the first available voice
-                    self.tts_engine.setProperty('voice', voices[0].id)
-            self.tts_available = True
-        except Exception as e:
-            print(f"Text-to-speech initialization failed: {str(e)}")
-            self.tts_available = False
-            self.tts_engine = None
+        self.tts_available = False
+        self.tts_engine = None
+        
+        if enable_tts:
+            try:
+                self.tts_engine = pyttsx3.init()
+                # Configure the TTS engine
+                self.tts_engine.setProperty('rate', 150)  # Speed of speech
+                self.tts_engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
+                
+                # Get available voices and set a voice
+                voices = self.tts_engine.getProperty('voices')
+                if voices:  # If voices are available, select a voice
+                    # Try to select a female voice if available
+                    female_voices = [v for v in voices if v.gender == 'female']
+                    if female_voices:
+                        self.tts_engine.setProperty('voice', female_voices[0].id)
+                    else:
+                        # Otherwise, use the first available voice
+                        self.tts_engine.setProperty('voice', voices[0].id)
+                self.tts_available = True
+            except Exception as e:
+                print(f"Text-to-speech initialization failed: {str(e)}")
+                self.tts_available = False
+                self.tts_engine = None
         
         # Set confidence thresholds
         self.high_confidence = 0.6

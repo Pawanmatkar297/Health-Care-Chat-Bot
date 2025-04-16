@@ -35,8 +35,8 @@ CORS(app,
      })
 
 print("Initializing chatbot...")
-# Initialize chatbot with English as default language
-chatbot = MedicalChatbot(language='english')
+# Initialize chatbot with English as default language and disable TTS for production
+chatbot = MedicalChatbot(language='english', enable_tts=False)
 print("Chatbot initialized successfully")
 
 # Store symptoms for each session
