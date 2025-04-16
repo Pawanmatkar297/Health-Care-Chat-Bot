@@ -31,8 +31,8 @@ class DiseasePredictor:
         self.group_to_diseases = {}  # Initialize group mapping
         
         # Get the directory path where ml_model.py is located
-        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        json_file = os.path.join(current_dir, 'backend', 'disease_prevalence.json')
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        json_file = os.path.join(current_dir, 'disease_prevalence.json')
         
         # Load prevalence information
         try:

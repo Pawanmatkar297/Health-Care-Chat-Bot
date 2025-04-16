@@ -14,6 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend directory contents
 COPY backend/ .
 
+# Ensure the JSON file is in the right location
+RUN ls -la
+
 # Default port
 ENV PORT=10000
 
