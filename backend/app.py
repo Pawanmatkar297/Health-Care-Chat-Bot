@@ -38,6 +38,11 @@ print("Chatbot initialized successfully")
 # Store symptoms for each session
 symptoms_dict = {}
 
+# Add a ping endpoint that responds immediately
+@app.route('/ping')
+def ping():
+    return 'pong'
+
 # Add a health check endpoint
 @app.route('/')
 def health_check():
