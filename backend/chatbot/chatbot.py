@@ -14,6 +14,7 @@ from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
 import re
 import warnings
+import os
 warnings.filterwarnings('ignore')
 
 class MedicalChatbot:
@@ -22,8 +23,12 @@ class MedicalChatbot:
         self.language = language.lower()
         self.translator = Translator()
         
+        # Get the current directory path
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_file = os.path.join(current_dir, 'Priority_wise_MedicalDataset - Sheet1 (1).csv')
+        
         # Load and preprocess the dataset
-        self.df = pd.read_csv('Priority_wise_MedicalDataset - Sheet1 (1).csv')
+        self.df = pd.read_csv(csv_file)
         self.lemmatizer = WordNetLemmatizer()
         self.stop_words = set(stopwords.words('english'))
         
@@ -34,7 +39,7 @@ class MedicalChatbot:
         
         # Initialize ML model
         print("Initializing XGBoost model...")
-        self.ml_model = DiseasePredictor('Priority_wise_MedicalDataset - Sheet1 (1).csv')
+        self.ml_model = DiseasePredictor(csv_file)
         
         # Initialize text-to-speech engine
         self.tts_engine = pyttsx3.init()
