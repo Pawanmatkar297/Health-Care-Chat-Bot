@@ -1,36 +1,27 @@
 {
     "prevalence_scores": {
-        "Common Cold": 5,
-        "Influenza (Flu)": 5,
-        "Asthma": 4,
-        "Hypertension": 4,
-        "Diabetes Type 2": 4,
-        "Urinary Tract Infection (UTI)": 4,
-        "Allergic Rhinitis": 4,
-        "Gastroenteritis": 4,
-        "Migraine": 3,
-        "Anxiety": 3,
-        "Depression": 3,
-        "Osteoarthritis": 3,
-        "Acid Reflux": 3,
-        "Bronchitis": 3,
-        "Pneumonia": 3,
-        "Sinusitis": 3,
-        "Tonsillitis": 3,
-        "Conjunctivitis": 3,
-        "Eczema": 3
+        "Common Cold": 5.0,
+        "Influenza (Flu)": 4.5,
+        "Migraine": 4.0,
+        "Tension Headache": 4.0,
+        "Viral Fever": 4.0,
+        "Allergic Rhinitis": 3.5,
+        "Sinusitis": 3.5,
+        "Bronchitis": 3.0,
+        "Pneumonia": 2.5,
+        "Asthma": 2.5
     },
     "severity_weights": {
-        "Mild": 1.0,
-        "Moderate": 1.2,
-        "Severe": 1.5,
-        "Chronic": 1.3
+        "Low": 1.0,
+        "Medium": 1.5,
+        "High": 2.0,
+        "Severe": 2.5
     },
     "symptom_weights": {
-        "Symptom_1": 1.0,
-        "Symptom_2": 0.8,
-        "Symptom_3": 0.6,
-        "Symptom_4": 0.4,
-        "Symptom_5": 0.3
+        "Symptom_1": 1.5,
+        "Symptom_2": 1.3,
+        "Symptom_3": 1.2,
+        "Symptom_4": 1.1,
+        "Symptom_5": 1.0
     }
 } 

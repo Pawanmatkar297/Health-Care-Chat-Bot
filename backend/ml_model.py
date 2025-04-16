@@ -58,9 +58,10 @@ class DiseasePredictor:
                 }
             }
         
-        # Force new training
-        print("Training new model...")
-        self.train_model()
+        # Use a dummy model for initialization (model will be lazy-loaded when needed)
+        self.model = None
+        self.is_model_initialized = False
+        print("Model will be initialized on first prediction request")
         
     def preprocess_text(self, text):
         """Preprocess text by converting to lowercase and removing special characters and common phrases"""
@@ -385,6 +386,12 @@ class DiseasePredictor:
     def predict_disease(self, symptoms):
         """Predict disease based on symptoms with prevalence weighting"""
         try:
+            # Initialize model on first prediction if not already initialized
+            if not self.is_model_initialized:
+                print("First prediction request - initializing model now...")
+                self.train_model()
+                self.is_model_initialized = True
+            
             # Preprocess symptoms
             processed_symptoms = [self.preprocess_text(s) for s in symptoms]
             print(f"\nProcessing symptoms: {processed_symptoms}")

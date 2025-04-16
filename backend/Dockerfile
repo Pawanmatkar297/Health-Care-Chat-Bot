@@ -23,5 +23,5 @@ ENV PORT=10000
 # Expose the port
 EXPOSE ${PORT}
 
-# Start command with a single worker to reduce memory usage
-CMD gunicorn --bind 0.0.0.0:${PORT} --workers 1 --threads 2 --timeout 120 app:app 
+# Start command with a single worker to reduce memory usage and increased timeout
+CMD gunicorn --bind 0.0.0.0:${PORT} --workers 1 --threads 2 --timeout 300 --keep-alive 5 --log-level debug app:app 
