@@ -2,6 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Download NLTK data during build
+RUN python -m pip install --upgrade pip && \
+    pip install nltk && \
+    python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('vader_lexicon')"
+
 # Copy only requirements first
 COPY backend/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,5 +20,5 @@ ENV PORT=10000
 # Expose the port
 EXPOSE ${PORT}
 
-# Start command
-CMD gunicorn --bind 0.0.0.0:${PORT} --workers 4 --threads 2 app:app 
+# Start command with a single worker to reduce memory usage
+CMD gunicorn --bind 0.0.0.0:${PORT} --workers 1 --threads 2 --timeout 120 app:app 

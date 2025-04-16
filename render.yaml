@@ -3,12 +3,14 @@ services:
     name: healthcare-chatbot
     env: docker
     dockerfilePath: ./backend/Dockerfile
-    region: ohio
+    region: singapore
     plan: free
-    healthCheckPath: /
+    healthCheckPath: /ping
     envVars:
       - key: PORT
         value: 10000
+      - key: PYTHON_HASH_SEED
+        value: 0
     scaling:
       minInstances: 1
       maxInstances: 1 

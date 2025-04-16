@@ -6,13 +6,22 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from chatbot.chatbot import MedicalChatbot
 import traceback
 from dotenv import load_dotenv
-
 import nltk
-print("Downloading NLTK data...")
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('vader_lexicon')  # Required for sentiment analysis
-print("NLTK data downloaded successfully")
+from pathlib import Path
+
+# Check if NLTK data is already downloaded to avoid redundant downloads
+nltk_data_dir = Path('/root/nltk_data')
+if not (nltk_data_dir / 'tokenizers' / 'punkt').exists():
+    print("Downloading NLTK punkt...")
+    nltk.download('punkt')
+if not (nltk_data_dir / 'corpora' / 'stopwords').exists():
+    print("Downloading NLTK stopwords...")
+    nltk.download('stopwords')
+if not (nltk_data_dir / 'sentiment' / 'vader_lexicon').exists():
+    print("Downloading NLTK vader_lexicon...")
+    nltk.download('vader_lexicon')
+
+print("NLTK data check completed")
 
 app = Flask(__name__)
 load_dotenv()  # Load environment variables from .env file
