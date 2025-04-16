@@ -2,20 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Download NLTK data during build - add wordnet
-RUN python -m pip install --upgrade pip && \
-    pip install nltk && \
-    python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('vader_lexicon'); nltk.download('wordnet'); nltk.download('omw-1.4')"
+# Install only the minimal requirements
+RUN pip install --no-cache-dir flask flask-cors gunicorn
 
-# Copy only requirements first
-COPY backend/requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy backend directory contents
-COPY backend/ .
-
-# Ensure the JSON file is in the right location
-RUN ls -la
+# Copy only what's needed for the simplified app
+COPY backend/simplified_app.py .
 
 # Default port
 ENV PORT=10000
@@ -23,5 +14,5 @@ ENV PORT=10000
 # Expose the port
 EXPOSE ${PORT}
 
-# Start command with a single worker to reduce memory usage and increased timeout
-CMD gunicorn --bind 0.0.0.0:${PORT} --workers 1 --threads 2 --timeout 300 --keep-alive 5 --log-level debug app:app 
+# Start command with the simplified app
+CMD gunicorn --bind 0.0.0.0:${PORT} --workers 1 --threads 2 --timeout 30 simplified_app:app 

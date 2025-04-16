@@ -240,20 +240,43 @@ class MedicalChatbot:
             "loss of appetite": ["anorexia", "poor appetite", "decreased appetite", "not hungry", "appetite loss"]
         }
         
+    def simple_tokenize(self, text):
+        """Simple tokenization without lemmatization to avoid wordnet dependency"""
+        if not isinstance(text, str):
+            return []
+            
+        # Convert to lowercase and remove special characters
+        text = re.sub(r'[^a-zA-Z\s]', '', text.lower())
+        
+        # Tokenize using simple word boundaries
+        tokens = self.tokenizer.tokenize(text)
+        
+        # Remove stopwords
+        tokens = [token for token in tokens if token not in self.stop_words]
+        
+        return tokens
+        
     def prepare_data(self):
         # Combine all symptoms for each disease into a single string
         symptom_cols = [col for col in self.df.columns if col.startswith('Symptom_')]
         self.df['all_symptoms'] = self.df[symptom_cols].fillna('').apply(lambda x: ' '.join(x.astype(str)), axis=1)
         
-        # Create TF-IDF vectorizer
+        # Create TF-IDF vectorizer with simple tokenization
         self.vectorizer = TfidfVectorizer(
-            tokenizer=self.preprocess_text,
+            tokenizer=self.simple_tokenize,  # Use simple tokenizer without lemmatization
             stop_words='english',
             ngram_range=(1, 2)
         )
         
         # Fit vectorizer on symptoms
-        self.symptom_vectors = self.vectorizer.fit_transform(self.df['all_symptoms'])
+        try:
+            self.symptom_vectors = self.vectorizer.fit_transform(self.df['all_symptoms'])
+            print("Vectorizer fit_transform completed successfully")
+        except Exception as e:
+            print(f"Error in vectorizer fit_transform: {str(e)}")
+            # Create a backup dummy vectorizer
+            self.symptom_vectors = np.zeros((len(self.df), 1))
+            print("Using dummy symptom vectors as fallback")
 
     def correct_spelling(self, text):
         """Correct spelling while preserving medical terms"""
