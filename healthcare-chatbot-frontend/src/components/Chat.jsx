@@ -231,7 +231,7 @@ const Chat = () => {
 
             // Only save if there are messages
             if (currentMessages.length > 0) {
-                await axios.post(`${process.env.REACT_APP_AUTH_URL}/api/chat-history/save`, {
+                await axios.post(`${process.env.REACT_APP_CHAT_URL}/api/chat-history/save`, {
                     sessionId: sessionId.current,
                     messages: currentMessages
                 }, {
@@ -270,11 +270,11 @@ const Chat = () => {
             }
 
             // Log the API URL being used
-            console.log("API URL:", process.env.REACT_APP_AUTH_URL);
+            console.log("API URL:", process.env.REACT_APP_CHAT_URL);
             
             // Attempt to contact server for basic connectivity check
             try {
-                const testResponse = await axios.get(`${process.env.REACT_APP_AUTH_URL}/api/test`);
+                const testResponse = await axios.get(`${process.env.REACT_APP_CHAT_URL}/api/test`);
                 console.log("Test API response:", testResponse.data);
             } catch (testError) {
                 console.error("Test API connection failed:", testError);
@@ -287,10 +287,10 @@ const Chat = () => {
                 language: selectedLanguage
             };
             
-            console.log("Sending request to:", `${process.env.REACT_APP_AUTH_URL}/api/chat`);
+            console.log("Sending request to:", `${process.env.REACT_APP_CHAT_URL}/api/chat`);
             console.log("Request data:", requestData);
             
-            const response = await axios.post(`${process.env.REACT_APP_AUTH_URL}/api/chat`, requestData, {
+            const response = await axios.post(`${process.env.REACT_APP_CHAT_URL}/api/chat`, requestData, {
                 headers: { 
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
