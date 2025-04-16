@@ -30,9 +30,33 @@ class DiseasePredictor:
         self.all_symptoms = set()
         self.group_to_diseases = {}  # Initialize group mapping
         
+        # Get the directory path where ml_model.py is located
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        json_file = os.path.join(current_dir, 'backend', 'disease_prevalence.json')
+        
         # Load prevalence information
-        with open('disease_prevalence.json', 'r') as f:
-            self.prevalence_config = json.load(f)
+        try:
+            with open(json_file, 'r') as f:
+                self.prevalence_config = json.load(f)
+        except FileNotFoundError:
+            print(f"Warning: Could not find {json_file}")
+            # Provide default configuration
+            self.prevalence_config = {
+                "prevalence_scores": {},
+                "severity_weights": {
+                    "Low": 1.0,
+                    "Medium": 1.5,
+                    "High": 2.0,
+                    "Severe": 2.5
+                },
+                "symptom_weights": {
+                    "Symptom_1": 1.5,
+                    "Symptom_2": 1.3,
+                    "Symptom_3": 1.2,
+                    "Symptom_4": 1.1,
+                    "Symptom_5": 1.0
+                }
+            }
         
         # Force new training
         print("Training new model...")
