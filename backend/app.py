@@ -19,7 +19,7 @@ load_dotenv()  # Load environment variables from .env file
 
 # Explicitly set the port
 port = int(os.environ.get("PORT", 10000))
-app.config['PORT'] = port
+print(f"Configured to use port: {port}")
 
 # Configure CORS with all necessary settings
 CORS(app, 
@@ -168,5 +168,5 @@ def save_chat_history():
         return jsonify({'success': False, 'message': 'Failed to save chat history'})
 
 if __name__ == '__main__':
-    print(f"Starting server on port {port}")
+    print(f"Starting Flask app on port {port}")
     app.run(host='0.0.0.0', port=port)

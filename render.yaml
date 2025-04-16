@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: healthcare-chatbot
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    region: ohio
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 10000
+    scaling:
+      minInstances: 1
+      maxInstances: 1 
