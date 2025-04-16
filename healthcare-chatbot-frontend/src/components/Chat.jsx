@@ -252,8 +252,11 @@ const Chat = () => {
     const sendMessageToBackend = async (message, type = 'text', audioBlob = null) => {
         try {
             setIsWaitingForResponse(true);
-            let data;
-            let headers = {};
+            console.log("Sending message to backend:", {
+                message,
+                session_id: sessionId.current,
+                language: selectedLanguage
+            });
             
             // Add user message first for text input
             if (type === 'text') {
@@ -265,29 +268,29 @@ const Chat = () => {
                 setMessages(prev => [...prev, userMessage]);
                 await saveChatHistory(); // Save after user message
             }
-            
-            if (type === 'voice' && audioBlob) {
-                data = new FormData();
-                data.append('type', type);
-                data.append('session_id', sessionId.current);
-                data.append('audio', audioBlob, 'recording.wav');
-                data.append('language', selectedLanguage);
-                headers['Content-Type'] = 'multipart/form-data';
-            } else {
-                data = {
-                    message: message,
-                    type: type,
-                    session_id: sessionId.current,
-                    language: selectedLanguage
-                };
-                headers['Content-Type'] = 'application/json';
-            }
 
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, {
+            // Log the API URL being used
+            console.log("API URL:", process.env.REACT_APP_API_URL);
+            
+            // Attempt to contact server for basic connectivity check
+            try {
+                const testResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/test`);
+                console.log("Test API response:", testResponse.data);
+            } catch (testError) {
+                console.error("Test API connection failed:", testError);
+            }
+            
+            // Prepare request data
+            const requestData = {
                 message: message,
                 session_id: sessionId.current,
                 language: selectedLanguage
-            }, {
+            };
+            
+            console.log("Sending request to:", `${process.env.REACT_APP_API_URL}/api/chat`);
+            console.log("Request data:", requestData);
+            
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, requestData, {
                 headers: { 
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
@@ -295,7 +298,9 @@ const Chat = () => {
                 withCredentials: true
             });
 
-            const responseData = await response.data; // Parse the response
+            console.log("Raw response:", response);
+            const responseData = response.data;
+            console.log("Response data:", responseData);
 
             if (responseData.success) {
                 // Only add user message for voice input
@@ -351,15 +356,20 @@ const Chat = () => {
                     sessionId.current = Math.random().toString(36).substring(7);
                 }
             } else {
+                console.error("API response indicates failure:", responseData);
                 throw new Error(responseData.message || 'Error processing request');
             }
         } catch (error) {
-            console.error('API call error:', error.response?.data || error.message);
+            console.error('API call error:', error);
+            console.error('Error details:', error.response?.data || error.message);
+            console.error('Error status:', error.response?.status);
+            console.error('Error headers:', error.response?.headers);
+            
             const errorMessage = {
                 type: 'system',
-                content: selectedLanguage === 'en' 
-                    ? 'Error processing your message. Please try again.'
-                    : 'आपका संदेश प्रोसेस करने में त्रुटि। कृपया पुनः प्रयास करें।',
+                content: `${selectedLanguage === 'en' 
+                    ? 'Error processing your message. Please try again.' 
+                    : 'आपका संदेश प्रोसेस करने में त्रुटि। कृपया पुनः प्रयास करें।'} ${error.message || ''}`,
                 timestamp: new Date().toISOString()
             };
             setMessages(prev => [...prev, errorMessage]);
