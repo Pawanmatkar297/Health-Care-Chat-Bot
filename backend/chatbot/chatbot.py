@@ -29,7 +29,18 @@ class MedicalChatbot:
         
         # Load and preprocess the dataset
         self.df = pd.read_csv(csv_file)
-        self.lemmatizer = WordNetLemmatizer()
+        
+        # Initialize NLP components with fallbacks
+        try:
+            self.lemmatizer = WordNetLemmatizer()
+        except Exception as e:
+            print(f"Failed to initialize WordNetLemmatizer: {str(e)}")
+            # Create a dummy lemmatizer that just returns the word
+            class DummyLemmatizer:
+                def lemmatize(self, word, pos='n'):
+                    return word
+            self.lemmatizer = DummyLemmatizer()
+            
         self.stop_words = set(stopwords.words('english'))
         
         # Initialize NLP components
@@ -281,10 +292,20 @@ class MedicalChatbot:
         # Tokenize using simple word boundaries
         tokens = self.tokenizer.tokenize(text)
         
-        # Remove stopwords and lemmatize
-        tokens = [self.lemmatizer.lemmatize(token) for token in tokens if token not in self.stop_words]
+        # Remove stopwords and lemmatize with error handling
+        processed_tokens = []
+        for token in tokens:
+            if token not in self.stop_words:
+                try:
+                    # Try to lemmatize
+                    lemmatized = self.lemmatizer.lemmatize(token)
+                    processed_tokens.append(lemmatized)
+                except Exception as e:
+                    # If lemmatization fails, use the original token
+                    print(f"Lemmatization failed for '{token}': {str(e)}")
+                    processed_tokens.append(token)
         
-        return tokens
+        return processed_tokens
 
     def process_symptoms(self, symptoms_list):
         """Process the list of symptoms with priority-based weighting and ML model predictions"""

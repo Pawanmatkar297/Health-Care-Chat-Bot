@@ -2,10 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Download NLTK data during build
+# Download NLTK data during build - add wordnet
 RUN python -m pip install --upgrade pip && \
     pip install nltk && \
-    python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('vader_lexicon')"
+    python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('vader_lexicon'); nltk.download('wordnet'); nltk.download('omw-1.4')"
 
 # Copy only requirements first
 COPY backend/requirements.txt requirements.txt

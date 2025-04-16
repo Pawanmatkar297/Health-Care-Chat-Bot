@@ -20,6 +20,12 @@ if not (nltk_data_dir / 'corpora' / 'stopwords').exists():
 if not (nltk_data_dir / 'sentiment' / 'vader_lexicon').exists():
     print("Downloading NLTK vader_lexicon...")
     nltk.download('vader_lexicon')
+if not (nltk_data_dir / 'corpora' / 'wordnet').exists():
+    print("Downloading NLTK wordnet...")
+    nltk.download('wordnet')
+if not (nltk_data_dir / 'corpora' / 'omw-1.4').exists():
+    print("Downloading NLTK omw-1.4...")
+    nltk.download('omw-1.4')
 
 print("NLTK data check completed")
 
