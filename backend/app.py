@@ -21,9 +21,7 @@ load_dotenv()  # Load environment variables from .env file
 CORS(app, 
      resources={
          r"/*": {
-             "origins": [
-                 "http://localhost:3000"
-             ],
+             "origins": ["*"],  # Allow all origins in production
              "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
              "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin"],
              "expose_headers": ["Content-Type", "Authorization"],
@@ -40,32 +38,19 @@ print("Chatbot initialized successfully")
 # Store symptoms for each session
 symptoms_dict = {}
 
+# Add a health check endpoint
+@app.route('/')
+def health_check():
+    return jsonify({"status": "healthy", "message": "Service is running"}), 200
+
 # Add CORS headers to all responses
 @app.after_request
 def after_request(response):
-    origin = request.headers.get('Origin')
-    allowed_origins = ["http://localhost:3000"]
-    if origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
-    return response
-
-# Handle OPTIONS requests
-@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
-@app.route('/<path:path>', methods=['OPTIONS'])
-def handle_options(path):
-    response = jsonify({"status": "ok"})
-    origin = request.headers.get('Origin')
-    allowed_origins = ["http://localhost:3000"]
-    if origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
     return response
 
 @app.route('/api/chat', methods=['POST'])
@@ -176,4 +161,4 @@ def save_chat_history():
 if __name__ == '__main__':
     # Get port from environment variable or default to 10000
     port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=False)
