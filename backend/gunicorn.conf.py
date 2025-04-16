@@ -1,22 +1,16 @@
 import os
-import multiprocessing
 
-# Bind to 0.0.0.0 to make the server publicly accessible
-bind = f"0.0.0.0:{int(os.environ.get('PORT', 10000))}"
-
-# Worker configuration
-workers = multiprocessing.cpu_count() * 2 + 1
-worker_class = 'sync'
-threads = 4
-
-# Timeout configuration
+# Basic configuration
+bind = "0.0.0.0:" + os.environ.get("PORT", "10000")
+workers = 4
+threads = 2
 timeout = 120
 keepalive = 5
 
 # Logging
-accesslog = '-'
-errorlog = '-'
-loglevel = 'info'
+accesslog = "-"
+errorlog = "-"
+loglevel = "info"
 
 # Reload workers when code changes (development only)
 reload = False
